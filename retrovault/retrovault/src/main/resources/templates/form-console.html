@@ -16,6 +16,7 @@
 
     <form th:action="@{/consoles/save}" th:object="${console}" method="post" style="background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
         
+        <input type="hidden" th:field="*{id}" />
         <label>Selecciona la Plataforma:</label>
         <select th:field="*{name}" required>
             <option value="" disabled selected>-- Elige una consola --</option>

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -50,5 +51,26 @@ public class ConsoleController {
         consoleService.saveConsole(console); // Guardamos en BBDD
         
         return "redirect:/consoles"; // Volvemos a la lista para ver el cambio
+    }
+
+    @GetMapping("/delete/{id}") // 1. La URL espera un número
+    public String deleteConsole(@PathVariable Long id) { // 2. Captura ese número
+        
+        consoleService.deleteConsole(id); // 3. Ordena borrar
+        
+        return "redirect:/consoles"; // 4. Recarga la lista
+    }
+
+    // 3. Método para EDITAR (Carga el formulario con datos)
+    @GetMapping("/edit/{id}") // OJO: La ruta final será /consoles/edit/{id}
+    public String showUpdateForm(@PathVariable Long id, Model model) {
+        // Buscamos la consola que coincida con el ID
+        Console console = consoleService.getAllConsoles().stream()
+                .filter(c -> c.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        model.addAttribute("console", console);
+        return "form-console"; // Reutilizamos el mismo formulario
     }
 }

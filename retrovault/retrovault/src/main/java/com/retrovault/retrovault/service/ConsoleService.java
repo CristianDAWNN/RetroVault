@@ -20,4 +20,9 @@ public class ConsoleService {
     public void saveConsole(Console console) {
         consoleRepository.save(console);
     }
+
+    // Método para borrar por ID
+    public void deleteConsole(Long id) {
+        consoleRepository.deleteById(id);
+    }
 }

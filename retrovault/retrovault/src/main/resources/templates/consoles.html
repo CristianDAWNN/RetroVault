@@ -26,7 +26,7 @@
                 <th>Plataforma</th>
                 <th>Fabricante</th>
                 <th>Fecha Registro</th>
-            </tr>
+                <th>Acciones</th> </tr>
         </thead>
         <tbody>
             <th:block th:each="c : ${consoles}">
@@ -35,6 +35,20 @@
                     <td th:text="${c.name}">PlayStation 5</td>
                     <td th:text="${c.company}">Sony</td>
                     <td th:text="${c.createdAt}">2026-01-25</td>
+                    
+                    <td>
+                        <a th:href="@{/consoles/edit/{id}(id=${c.id})}" 
+                        style="color: blue; font-weight: bold; text-decoration: none; margin-right: 10px;">
+                        ✏️ Editar
+                        </a>
+
+                        <a th:href="@{/consoles/delete/{id}(id=${c.id})}"
+                        onclick="return confirm('¿Seguro?')"
+                        style="color: red; font-weight: bold; text-decoration: none;">
+                        🗑️ Eliminar
+                        </a>
+                    </td>
+                    
                 </tr>
             </th:block>
         </tbody>

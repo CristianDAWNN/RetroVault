@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nueva Consola</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; padding: 10px 20px; border: none; margin-top: 20px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">🎮 Añadir a mi Colección</h1>
+
+    <form th:action="@{/consoles/save}" th:object="${console}" method="post" style="background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+        
+        <label>Selecciona la Plataforma:</label>
+        <select th:field="*{name}" required>
+            <option value="" disabled selected>-- Elige una consola --</option>
+            
+            <optgroup label="Sony PlayStation">
+                <option value="PlayStation 5">PlayStation 5</option>
+                <option value="PlayStation 4">PlayStation 4</option>
+                <option value="PlayStation 3">PlayStation 3</option>
+                <option value="PlayStation 2">PlayStation 2</option>
+                <option value="PlayStation 1">PlayStation 1</option>
+                <option value="PSP">PSP</option>
+                <option value="PS Vita">PS Vita</option>
+            </optgroup>
+
+            <optgroup label="Nintendo">
+                <option value="Nintendo Switch">Nintendo Switch</option>
+                <option value="Wii U">Wii U</option>
+                <option value="Wii">Wii</option>
+                <option value="GameCube">GameCube</option>
+                <option value="Nintendo 64">Nintendo 64</option>
+                <option value="SNES">Super Nintendo (SNES)</option>
+                <option value="NES">NES</option>
+                <option value="Game Boy Advance">Game Boy Advance</option>
+            </optgroup>
+
+            <optgroup label="Microsoft Xbox">
+                <option value="Xbox Series X/S">Xbox Series X/S</option>
+                <option value="Xbox One">Xbox One</option>
+                <option value="Xbox 360">Xbox 360</option>
+                <option value="Xbox Original">Xbox Original</option>
+            </optgroup>
+
+            <optgroup label="SEGA / Retro">
+                <option value="Sega Dreamcast">Sega Dreamcast</option>
+                <option value="Sega Saturn">Sega Saturn</option>
+                <option value="Sega Mega Drive">Sega Mega Drive</option>
+                <option value="Neo Geo">Neo Geo</option>
+            </optgroup>
+        </select>
+
+        <label>Fabricante:</label>
+        <select th:field="*{company}" required>
+            <option value="" disabled selected>-- Elige el fabricante --</option>
+            <option value="Sony">Sony</option>
+            <option value="Nintendo">Nintendo</option>
+            <option value="Microsoft">Microsoft</option>
+            <option value="SEGA">SEGA</option>
+            <option value="SNK">SNK</option>
+            <option value="Atari">Atari</option>
+            <option value="PC">PC / Otros</option>
+        </select>
+
+        <button type="submit">💾 GUARDAR EN MI INVENTARIO</button>
+    </form>
+
+    <br>
+    <div style="text-align: center;">
+        <a href="/consoles" style="text-decoration: none; color: #007bff;">⬅ Volver a la lista</a>
+    </div>
+
+</body>
+</html>

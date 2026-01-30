@@ -42,6 +42,9 @@ public class Game {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "image_url") // Guardaremos la ruta o nombre del archivo
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "console_id", nullable = false)
     @ToString.Exclude

@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.*;
+import java.io.IOException;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/games")
@@ -36,11 +40,44 @@ public class GameController {
 
     // GUARDAR
     @PostMapping("/save")
-    public String saveGame(Game game) {
+    public String saveGame(@ModelAttribute Game game, 
+                           @RequestParam("file") MultipartFile file) { // Recibimos el archivo
+        
+        // Lógica para guardar la imagen
+        if (!file.isEmpty()) {
+            try {
+                // Ruta absoluta donde se guardarán las fotos (carpeta "uploads" en la raíz del proyecto)
+                Path directorioImagenes = Paths.get("uploads");
+                String rutaAbsoluta = directorioImagenes.toFile().getAbsolutePath();
+
+                // Crear el directorio si no existe
+                if (!Files.exists(directorioImagenes)) {
+                    Files.createDirectories(directorioImagenes);
+                }
+
+                String nombreArchivo = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                
+                // Guardar bytes: leemos los bytes del fichero y los escribimos en la ruta
+                byte[] bytesImg = file.getBytes();
+                Path rutaCompleta = Paths.get(rutaAbsoluta + "/" + nombreArchivo);
+                Files.write(rutaCompleta, bytesImg);
+
+                // Guardamos el nombre en el objeto Juego
+                game.setImageUrl(nombreArchivo);
+
+            } catch (IOException e) {
+                e.printStackTrace(); // Si falla, que nos lo diga por consola
+            }
+        }
+
+        // Auditoría básica
         if (game.getId() == null) {
             game.setCreatedBy("WebUser");
         }
+        
+        //Guardar en BBDD
         gameService.saveGame(game);
+        
         return "redirect:/games";
     }
 

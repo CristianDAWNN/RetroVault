@@ -34,8 +34,13 @@
         </thead>
         <tbody>
             <tr th:each="g : ${games}">
-                <td>🖼️</td>
-                <td th:text="${g.title}">Zelda</td>
+                <td>
+                    <img th:if="${g.imageUrl != null}" 
+                        th:src="@{'/uploads/' + ${g.imageUrl}}" 
+                        style="width: 60px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" />
+                    
+                    <span th:unless="${g.imageUrl != null}" style="font-size: 2em;">🖼️</span>
+                </td>                <td th:text="${g.title}">Zelda</td>
                 
                 <td th:text="${g.console.name}">Switch</td>
                 

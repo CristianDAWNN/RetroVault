@@ -15,8 +15,7 @@
 
     <h1 style="text-align: center;">👾 Ficha de Juego</h1>
 
-    <form th:action="@{/games/save}" th:object="${game}" method="post">
-        
+    <form th:action="@{/games/save}" th:object="${game}" method="post" enctype="multipart/form-data">        
         <input type="hidden" th:field="*{id}" />
 
         <label>Título del Juego:</label>
@@ -43,6 +42,11 @@
 
         <label>Fecha de Lanzamiento (Aprox):</label>
         <input type="date" th:field="*{launchDate}" />
+
+        <label>📸 Portada del Juego:</label>
+        <input type="file" name="file" accept="image/*" />
+        
+        <input type="hidden" th:field="*{imageUrl}" />
 
         <button type="submit">💾 GUARDAR JUEGO</button>
     </form>

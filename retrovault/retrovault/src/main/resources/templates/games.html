@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mis Juegos</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #6f42c1; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8em; color: white; font-weight: bold; }
+        .bg-pendiente { background-color: #ffc107; color: black; }
+        .bg-jugando { background-color: #17a2b8; }
+        .bg-terminado { background-color: #28a745; }
+        .bg-abandonado { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Biblioteca de Juegos</h1>
+
+    <a href="/games/new" style="background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">➕ AÑADIR JUEGO</a>
+    <a href="/consoles" style="background: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; margin-left: 10px;">🎮 VER CONSOLAS</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Portada</th> <th>Título</th>
+                <th>Consola</th>
+                <th>Estado</th>
+                <th>Nota</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="g : ${games}">
+                <td>🖼️</td>
+                <td th:text="${g.title}">Zelda</td>
+                
+                <td th:text="${g.console.name}">Switch</td>
+                
+                <td>
+                    <span class="badge" 
+                          th:classappend="${g.status.name() == 'TERMINADO' ? 'bg-terminado' : 
+                                          (g.status.name() == 'JUGANDO' ? 'bg-jugando' : 
+                                          (g.status.name() == 'ABANDONADO' ? 'bg-abandonado' : 'bg-pendiente'))}"
+                          th:text="${g.status}">TERMINADO</span>
+                </td>
+                
+                <td th:text="${g.rate} + '/5'">5/5</td>
+                
+                <td>
+                    <a th:href="@{/games/edit/{id}(id=${g.id})}" style="text-decoration: none;">✏️</a>
+                    <a th:href="@{/games/delete/{id}(id=${g.id})}" onclick="return confirm('¿Borrar?')" style="text-decoration: none;">🗑️</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${games.empty}" style="margin-top: 20px;">
+        <p>⚠️ No tienes juegos. ¡Añade el primero!</p>
+    </div>
+
+</body>
+</html>

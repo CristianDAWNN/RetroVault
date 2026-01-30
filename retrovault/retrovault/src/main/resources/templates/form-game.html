@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gestionar Juego</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f4f4f4; }
+        form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #6f42c1; color: white; padding: 12px; border: none; width: 100%; margin-top: 20px; font-size: 16px; cursor: pointer; border-radius: 4px;}
+        button:hover { background-color: #5a32a3; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">👾 Ficha de Juego</h1>
+
+    <form th:action="@{/games/save}" th:object="${game}" method="post">
+        
+        <input type="hidden" th:field="*{id}" />
+
+        <label>Título del Juego:</label>
+        <input type="text" th:field="*{title}" required placeholder="Ej: Super Mario 64" />
+
+        <label>Plataforma (Consola):</label>
+        <select th:field="*{console}" required>
+            <option value="" disabled selected>-- Elige donde lo tienes --</option>
+            <option th:each="c : ${consoles}" 
+                    th:value="${c.id}" 
+                    th:text="${c.name} + ' (' + ${c.company} + ')'"></option>
+        </select>
+
+        <label>Estado:</label>
+        <select th:field="*{status}">
+            <option value="PENDIENTE">⏳ Pendiente</option>
+            <option value="JUGANDO">🎮 Jugando ahora</option>
+            <option value="TERMINADO">🏆 Terminado</option>
+            <option value="ABANDONADO">💀 Abandonado</option>
+        </select>
+
+        <label>Valoración (0-5):</label>
+        <input type="number" th:field="*{rate}" min="0" max="5" placeholder="¿Cuántas estrellas?" />
+
+        <label>Fecha de Lanzamiento (Aprox):</label>
+        <input type="date" th:field="*{launchDate}" />
+
+        <button type="submit">💾 GUARDAR JUEGO</button>
+    </form>
+
+    <br>
+    <div style="text-align: center;">
+        <a href="/games" style="text-decoration: none; color: #6f42c1;">⬅ Volver a la lista</a>
+    </div>
+
+</body>
+</html>

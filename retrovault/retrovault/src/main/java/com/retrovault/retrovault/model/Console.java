@@ -3,6 +3,8 @@ package com.retrovault.retrovault.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +23,6 @@ public class Console {
 
     private String company;
 
-    // --- AUDITORÍA ---
     @Column(name = "created_at", nullable = false , updatable = false)
     private LocalDateTime createdAt;
     
@@ -33,9 +34,11 @@ public class Console {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "console", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Game> games;
 
     @PrePersist

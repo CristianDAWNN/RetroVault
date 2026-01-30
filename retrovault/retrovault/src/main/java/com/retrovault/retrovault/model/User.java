@@ -3,6 +3,7 @@ package com.retrovault.retrovault.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +42,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Console> consoles;
 
     @PrePersist

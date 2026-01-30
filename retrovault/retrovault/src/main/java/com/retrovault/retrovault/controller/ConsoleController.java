@@ -3,6 +3,7 @@ package com.retrovault.retrovault.controller;
 import com.retrovault.retrovault.model.Console;
 import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
+import com.retrovault.retrovault.service.UserService; // <--- IMPORTANTE
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal; // <--- IMPORTANTE
 import java.util.List;
 
 @Controller
@@ -20,57 +22,70 @@ public class ConsoleController {
     @Autowired
     private ConsoleService consoleService;
 
-    @GetMapping
-    public String listConsoles(Model model) {
-        List<Console> list = consoleService.getAllConsoles();
+    @Autowired
+    private UserService userService; // <--- INYECTAMOS EL SERVICIO DE USUARIOS
+
+@GetMapping
+    public String listConsoles(Model model, Principal principal) { // <--- AÑADIR Principal
+        
+        // 1. Buscamos quién está conectado
+        String username = principal.getName();
+        User currentUser = userService.getUserByUsername(username);
+
+        // 2. Pedimos SOLO sus consolas (CAMBIO IMPORTANTE)
+        // ANTES: List<Console> list = consoleService.getAllConsoles();
+        List<Console> list = consoleService.getConsolesByUser(currentUser);
         
         model.addAttribute("consoles", list);
         
         return "consoles"; 
     }
 
-// 1. Mostrar el formulario vacío
+    // Mostrar el formulario vacío
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("console", new Console()); // Pasamos un objeto vacío para rellenar
+        model.addAttribute("console", new Console()); 
         return "form-console";
     }
 
-    // 2. Recibir los datos del formulario y guardar
+    // Recibir los datos del formulario y guardar
     @PostMapping("/save")
-    public String saveConsole(Console console) {
-        // TRUCO TEMPORAL: Como todavía no tenemos Login,
-        // vamos a asignar las consolas manualmente al Usuario con ID 1.
-        // Si no hacemos esto, fallará porque la consola necesita un dueño.
-        User user = new User();
-        user.setId(1L); // Asumimos que el usuario 1 existe (lo creamos antes por SQL)
+    public String saveConsole(Console console, Principal principal) { // <--- AÑADIMOS PRINCIPAL
         
-        console.setUser(user);
-        console.setCreatedBy("WebUser"); // Auditoría temporal
+        // 1. Recuperamos el nombre del usuario conectado
+        String username = principal.getName();
+        
+        // 2. Buscamos sus datos completos en la base de datos
+        User currentUser = userService.getUserByUsername(username);
+        
+        // 3. Asignamos la consola a ESE usuario (Adiós al hardcodeo)
+        console.setUser(currentUser);
+        
+        // Auditoría
+        if (console.getCreatedBy() == null || console.getCreatedBy().isEmpty()) {
+             console.setCreatedBy(username);
+        }
         
         consoleService.saveConsole(console); // Guardamos en BBDD
         
-        return "redirect:/consoles"; // Volvemos a la lista para ver el cambio
+        return "redirect:/consoles"; 
     }
 
-    @GetMapping("/delete/{id}") // 1. La URL espera un número
-    public String deleteConsole(@PathVariable Long id) { // 2. Captura ese número
-        
-        consoleService.deleteConsole(id); // 3. Ordena borrar
-        
-        return "redirect:/consoles"; // 4. Recarga la lista
+    @GetMapping("/delete/{id}") 
+    public String deleteConsole(@PathVariable Long id) { 
+        consoleService.deleteConsole(id); 
+        return "redirect:/consoles"; 
     }
 
-    // 3. Método para EDITAR (Carga el formulario con datos)
-    @GetMapping("/edit/{id}") // OJO: La ruta final será /consoles/edit/{id}
+    // Método para EDITAR 
+    @GetMapping("/edit/{id}") 
     public String showUpdateForm(@PathVariable Long id, Model model) {
-        // Buscamos la consola que coincida con el ID
         Console console = consoleService.getAllConsoles().stream()
                 .filter(c -> c.getId().equals(id))
                 .findFirst()
                 .orElse(null);
 
         model.addAttribute("console", console);
-        return "form-console"; // Reutilizamos el mismo formulario
+        return "form-console"; 
     }
 }

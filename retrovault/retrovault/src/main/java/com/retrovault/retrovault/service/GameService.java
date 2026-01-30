@@ -28,4 +28,8 @@ public class GameService {
     public Game getGameById(Long id) {
         return gameRepository.findById(id).orElse(null);
     }
+
+    public List<Game> getGamesByUser(String username) {
+    return gameRepository.findByCreatedBy(username);
+}
 }

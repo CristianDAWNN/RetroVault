@@ -1,15 +1,19 @@
 package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.Game;
+import com.retrovault.retrovault.model.User; // <--- IMPORTANTE
 import com.retrovault.retrovault.service.ConsoleService;
 import com.retrovault.retrovault.service.GameService;
+import com.retrovault.retrovault.service.UserService; // <--- IMPORTANTE
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.file.*;
 import java.io.IOException;
+import java.security.Principal; // <--- IMPORTANTE
 import java.util.UUID;
 
 @Controller
@@ -22,18 +26,21 @@ public class GameController {
     @Autowired
     private ConsoleService consoleService;
 
+    @Autowired
+    private UserService userService; // <--- INYECTAMOS EL SERVICIO DE USUARIOS
+
     // LISTAR JUEGOS
-    @GetMapping
-    public String listGames(Model model) {
-        model.addAttribute("games", gameService.getAllGames());
-        return "games"; // Vista de la lista
+@GetMapping
+    public String listGames(Model model, Principal principal) { // Añade Principal
+        String username = principal.getName();
+        model.addAttribute("games", gameService.getGamesByUser(username));
+        return "games"; 
     }
 
     // FORMULARIO DE AÑADIR
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("game", new Game());
-        // Pasamos la lista de consolas a la vista para el <select>
         model.addAttribute("consoles", consoleService.getAllConsoles());
         return "form-game";
     }
@@ -41,41 +48,44 @@ public class GameController {
     // GUARDAR
     @PostMapping("/save")
     public String saveGame(@ModelAttribute Game game, 
-                           @RequestParam("file") MultipartFile file) { // Recibimos el archivo
+                           @RequestParam("file") MultipartFile file,
+                           Principal principal) { // <--- AÑADIMOS PRINCIPAL
         
-        // Lógica para guardar la imagen
+        // Lógica para guardar la imagen (Mantenemos lo que ya funcionaba)
         if (!file.isEmpty()) {
             try {
-                // Ruta absoluta donde se guardarán las fotos (carpeta "uploads" en la raíz del proyecto)
                 Path directorioImagenes = Paths.get("uploads");
                 String rutaAbsoluta = directorioImagenes.toFile().getAbsolutePath();
 
-                // Crear el directorio si no existe
                 if (!Files.exists(directorioImagenes)) {
                     Files.createDirectories(directorioImagenes);
                 }
 
                 String nombreArchivo = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
                 
-                // Guardar bytes: leemos los bytes del fichero y los escribimos en la ruta
                 byte[] bytesImg = file.getBytes();
                 Path rutaCompleta = Paths.get(rutaAbsoluta + "/" + nombreArchivo);
                 Files.write(rutaCompleta, bytesImg);
 
-                // Guardamos el nombre en el objeto Juego
                 game.setImageUrl(nombreArchivo);
 
             } catch (IOException e) {
-                e.printStackTrace(); // Si falla, que nos lo diga por consola
+                e.printStackTrace(); 
             }
         }
 
-        // Auditoría básica
+        // --- ZONA DE SEGURIDAD Y AUDITORÍA ---
+        // Recuperamos el usuario real
+        String username = principal.getName();
+        // (Opcional: Si en el futuro el juego tiene campo "User", aquí lo usaríamos)
+        // User currentUser = userService.getUserByUsername(username); 
+
+        // Auditoría básica: Guardamos el nombre del creador real
         if (game.getId() == null) {
-            game.setCreatedBy("WebUser");
+            game.setCreatedBy(username); // <--- Usamos el nombre real
         }
         
-        //Guardar en BBDD
+        // Guardar en BBDD
         gameService.saveGame(game);
         
         return "redirect:/games";

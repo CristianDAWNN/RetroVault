@@ -1,9 +1,10 @@
 package com.retrovault.retrovault.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*; // <--- IMPORTANTE
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate; // OJO: Importar LocalDate
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,34 +17,35 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // REGLA 1: No puede estar vacío
     @Column(nullable = false)
+    @NotBlank(message = "El título es obligatorio") 
     private String title;
 
-    // FECHA DE LANZAMIENTO (Diagrama: LAUNCH_DATE)
     @Column(name = "launch_date")
     private LocalDate launchDate; 
 
-    // ESTADO (Diagrama: STATUS) -> Ej: "Completado", "Pendiente"
     private String status;
 
-    // VALORACIÓN (Diagrama: RATE) -> Ej: 0 a 10
+    // REGLA 2: La nota debe ser entre 0 y 10
+    @Min(value = 0, message = "La nota mínima es 0")
+    @Max(value = 10, message = "La nota máxima es 10")
     private Integer rate;
 
-    // IMAGEN (Diagrama: COVER_IMG)
-    // OJO: Antes lo llamábamos imageUrl, ahora lo cambiamos a coverImg para coincidir contigo
     @Column(name = "cover_img") 
     private String coverImg;
 
-    // --- CAMPOS DE AUDITORÍA ---
+    // --- AUDITORÍA ---
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
     @Column(name = "created_by")
     private String createdBy;
 
-    // RELACIÓN CON CONSOLA (Diagrama: CONSOLE_ID)
+    // REGLA 3: Debe tener una consola asociada
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "console_id")
+    @NotNull(message = "Debes elegir una plataforma")
     private Console console;
 
     @PrePersist

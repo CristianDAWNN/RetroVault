@@ -20,23 +20,33 @@
                         <form th:action="@{/games/save}" th:object="${game}" method="post" enctype="multipart/form-data">
                             
                             <input type="hidden" th:field="*{id}" />
-                            
                             <input type="hidden" th:field="*{coverImg}" />
 
                             <div class="mb-3">
                                 <label class="form-label">Título del Juego</label>
-                                <input type="text" th:field="*{title}" class="form-control" placeholder="Ej: Super Mario World" required />
+                                <input type="text" th:field="*{title}" 
+                                       class="form-control" 
+                                       th:errorclass="is-invalid"
+                                       placeholder="Ej: Super Mario World" />
+                                
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                                    El título es obligatorio.
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Plataforma</label>
-                                <select th:field="*{console}" class="form-select">
+                                <select th:field="*{console}" class="form-select" th:errorclass="is-invalid">
                                     <option th:each="c : ${consoles}" 
                                             th:value="${c.id}" 
                                             th:text="${c.name}">SNES</option>
                                 </select>
                                 <div th:if="${consoles.empty}" class="form-text text-danger">
                                     ⚠️ No tienes consolas creadas. Crea una primero.
+                                </div>
+
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('console')}" th:errors="*{console}">
+                                    Debes seleccionar una plataforma.
                                 </div>
                             </div>
 
@@ -58,7 +68,14 @@
 
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Valoración (0-10)</label>
-                                    <input type="number" th:field="*{rate}" class="form-control" min="0" max="10" />
+                                    <input type="number" th:field="*{rate}" 
+                                           class="form-control" 
+                                           th:errorclass="is-invalid"
+                                           min="0" max="10" />
+                                    
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rate')}" th:errors="*{rate}">
+                                        La nota debe estar entre 0 y 10.
+                                    </div>
                                 </div>
                             </div>
 

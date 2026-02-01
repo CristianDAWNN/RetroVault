@@ -14,14 +14,25 @@
             <a th:href="@{/games/new}" class="btn btn-success shadow">+ Añadir Juego</a>
         </div>
 
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0">🔍</span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" 
+                           placeholder="Escribe para filtrar (ej: Mario, Zelda)..." 
+                           autocomplete="off">
+                </div>
+            </div>
+        </div>
+
         <div th:if="${games.empty}" class="text-center py-5">
             <h3 class="text-muted">📭 Tu colección está vacía</h3>
             <p>¡Empieza a añadir tus joyas retro!</p>
         </div>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="gamesContainer">
             
-            <div class="col" th:each="g : ${games}">
+            <div class="col game-item" th:each="g : ${games}">
                 <div class="card game-card">
                     
                     <img th:if="${g.coverImg != null}" 

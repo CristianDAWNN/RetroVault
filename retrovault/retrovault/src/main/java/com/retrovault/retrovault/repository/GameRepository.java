@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByCreatedBy(String username);
+    List<Game> findByTitleContainingIgnoreCaseAndCreatedBy(String title, String createdBy);
 }

@@ -1,5 +1,6 @@
 package com.retrovault.retrovault.service;
 
+import com.retrovault.retrovault.model.Console;
 import com.retrovault.retrovault.model.Game;
 import com.retrovault.retrovault.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,8 @@ public class GameService {
         }
         // Si la búsqueda está vacía, devolvemos la lista normal
         return gameRepository.findByCreatedBy(username);
+        }
+    public boolean existsByTitleAndConsole(String title, Console console) {
+    return gameRepository.existsByTitleAndConsole(title, console);
     }
 }

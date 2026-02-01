@@ -73,24 +73,26 @@ public class GameController {
 
     // GUARDAR (Mantenemos la lógica de la imagen y el usuario)
 @PostMapping("/save")
-    public String saveGame(@Valid @ModelAttribute Game game, // @Valid activa la revisión
-                           BindingResult result,             // Aquí se guardan los errores si los hay
+    public String saveGame(@Valid @ModelAttribute Game game, 
+                           BindingResult result, 
                            @RequestParam("file") MultipartFile file,
                            Principal principal,
-                           Model model) { // Necesitamos Model para volver a cargar la lista de consolas si falla
+                           Model model) {
         
-        // 1. SI HAY ERRORES DE VALIDACIÓN (Ej: Nota = 20)
+        // --- VALIDACIÓN ANTI-DUPLICADOS ---
+        // Solo si es juego nuevo Y ya existe ese título en esa consola
+        if (game.getId() == null && gameService.existsByTitleAndConsole(game.getTitle(), game.getConsole())) {
+            result.rejectValue("title", "error.game", "⚠️ Ya tienes este juego en la plataforma " + game.getConsole().getName());
+        }
+
+        // 1. SI HAY ERRORES
         if (result.hasErrors()) {
-            // Tenemos que recargar la lista de consolas para que el desplegable no salga vacío
             String username = principal.getName();
             User currentUser = userService.getUserByUsername(username);
             model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
-            
-            // Devolvemos al usuario al formulario (no hacemos redirect, sino return vista)
             return "form-game";
         }
 
-        // 2. SI TODO ESTÁ BIEN, SEGUIMOS CON LA LÓGICA DE SIEMPRE...
         
         // Guardado de Imagen
         if (!file.isEmpty()) {

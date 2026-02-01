@@ -1,5 +1,6 @@
 package com.retrovault.retrovault.repository;
 
+import com.retrovault.retrovault.model.Console;
 import com.retrovault.retrovault.model.Game;
 
 import java.util.List;
@@ -11,4 +12,5 @@ import org.springframework.stereotype.Repository;
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByCreatedBy(String username);
     List<Game> findByTitleContainingIgnoreCaseAndCreatedBy(String title, String createdBy);
+    boolean existsByTitleAndConsole(String title, Console console);
 }

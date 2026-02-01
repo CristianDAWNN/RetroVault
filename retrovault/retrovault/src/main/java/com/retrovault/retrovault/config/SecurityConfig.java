@@ -14,21 +14,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((requests) -> requests
-                // Permitimos acceso total a los recursos estáticos (css, js) y a la carpeta uploads
-                .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
-                // Permitimos acceso a la página de registro y al proceso de registrar
+                // AÑADIMOS "/" y "/home" a la lista de permitidos
+                .requestMatchers("/", "/home", "/css/**", "/js/**", "/uploads/**").permitAll()
                 .requestMatchers("/register", "/saveUser").permitAll()
-                // Todo lo demás requiere estar logueado
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
-                // Usamos el login por defecto de Spring, pero redirigimos a /games al entrar
-                .defaultSuccessUrl("/games", true)
+                .loginPage("/login") // Si no tienes una vista login personalizada, Spring usará la suya, pero esto prepara el terreno
+                .defaultSuccessUrl("/games", true) // Al entrar, vamos a mis juegos
                 .permitAll()
             )
             .logout((logout) -> logout
-                .logoutUrl("/logout") // URL para salir
-                .logoutSuccessUrl("/login?logout") // A dónde ir tras salir
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/") // Al salir, volvemos a la PORTADA (no al login)
                 .permitAll()
             );
 

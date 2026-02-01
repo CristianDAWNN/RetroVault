@@ -30,4 +30,9 @@ public class AuthController {
         // Redirigimos al login para que entre
         return "redirect:/login"; 
     }
+
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "login"; // Carga el archivo login.html
+    }
 }

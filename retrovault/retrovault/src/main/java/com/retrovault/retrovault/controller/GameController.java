@@ -1,10 +1,10 @@
 package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.Game;
-import com.retrovault.retrovault.model.User; // <--- IMPORTANTE
+import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
 import com.retrovault.retrovault.service.GameService;
-import com.retrovault.retrovault.service.UserService; // <--- IMPORTANTE
+import com.retrovault.retrovault.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.*;
 import java.io.IOException;
-import java.security.Principal; // <--- IMPORTANTE
+import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -27,31 +27,40 @@ public class GameController {
     private ConsoleService consoleService;
 
     @Autowired
-    private UserService userService; // <--- INYECTAMOS EL SERVICIO DE USUARIOS
+    private UserService userService;
 
     // LISTAR JUEGOS
-@GetMapping
-    public String listGames(Model model, Principal principal) { // Añade Principal
+    @GetMapping
+    public String listGames(Model model, Principal principal) {
         String username = principal.getName();
+        // Usamos el método que busca por el nombre del creador
         model.addAttribute("games", gameService.getGamesByUser(username));
         return "games"; 
     }
 
-    // FORMULARIO DE AÑADIR
+    // FORMULARIO DE AÑADIR (CORREGIDO EL DESPLEGABLE)
     @GetMapping("/new")
-    public String showCreateForm(Model model) {
+    public String showCreateForm(Model model, Principal principal) {
         model.addAttribute("game", new Game());
-        model.addAttribute("consoles", consoleService.getAllConsoles());
+        
+        // --- CORRECCIÓN AQUÍ ---
+        // 1. Buscamos al usuario conectado
+        String username = principal.getName();
+        User currentUser = userService.getUserByUsername(username);
+        
+        // 2. Pasamos SOLO las consolas de este usuario al desplegable
+        model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
+        
         return "form-game";
     }
 
-    // GUARDAR
+    // GUARDAR (Mantenemos la lógica de la imagen y el usuario)
     @PostMapping("/save")
     public String saveGame(@ModelAttribute Game game, 
                            @RequestParam("file") MultipartFile file,
-                           Principal principal) { // <--- AÑADIMOS PRINCIPAL
+                           Principal principal) {
         
-        // Lógica para guardar la imagen (Mantenemos lo que ya funcionaba)
+        // Guardado de Imagen
         if (!file.isEmpty()) {
             try {
                 Path directorioImagenes = Paths.get("uploads");
@@ -62,41 +71,45 @@ public class GameController {
                 }
 
                 String nombreArchivo = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-                
                 byte[] bytesImg = file.getBytes();
                 Path rutaCompleta = Paths.get(rutaAbsoluta + "/" + nombreArchivo);
                 Files.write(rutaCompleta, bytesImg);
 
-                game.setImageUrl(nombreArchivo);
+                // IMPORTANTE: Usamos setCoverImg (el nombre nuevo)
+                game.setCoverImg(nombreArchivo);
 
             } catch (IOException e) {
                 e.printStackTrace(); 
             }
         }
 
-        // --- ZONA DE SEGURIDAD Y AUDITORÍA ---
-        // Recuperamos el usuario real
+        // Auditoría
         String username = principal.getName();
-        // (Opcional: Si en el futuro el juego tiene campo "User", aquí lo usaríamos)
-        // User currentUser = userService.getUserByUsername(username); 
-
-        // Auditoría básica: Guardamos el nombre del creador real
         if (game.getId() == null) {
-            game.setCreatedBy(username); // <--- Usamos el nombre real
+            game.setCreatedBy(username);
+        } else {
+            // Si estamos editando, asegúrate de mantener el creador original o actualizarlo si es necesario
+            // De momento lo dejamos simple:
+             if (game.getCreatedBy() == null) {
+                 game.setCreatedBy(username);
+             }
         }
         
-        // Guardar en BBDD
         gameService.saveGame(game);
-        
         return "redirect:/games";
     }
 
-    // FORMULARIO DE EDITAR
+    // FORMULARIO DE EDITAR (CORREGIDO EL DESPLEGABLE)
     @GetMapping("/edit/{id}")
-    public String showUpdateForm(@PathVariable Long id, Model model) {
+    public String showUpdateForm(@PathVariable Long id, Model model, Principal principal) {
         Game game = gameService.getGameById(id);
         model.addAttribute("game", game);
-        model.addAttribute("consoles", consoleService.getAllConsoles());
+        
+        // --- CORRECCIÓN AQUÍ TAMBIÉN ---
+        String username = principal.getName();
+        User currentUser = userService.getUserByUsername(username);
+        model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
+        
         return "form-game";
     }
 

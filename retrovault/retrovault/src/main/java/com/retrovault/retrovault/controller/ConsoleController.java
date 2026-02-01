@@ -3,7 +3,7 @@ package com.retrovault.retrovault.controller;
 import com.retrovault.retrovault.model.Console;
 import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
-import com.retrovault.retrovault.service.UserService; // <--- IMPORTANTE
+import com.retrovault.retrovault.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.security.Principal; // <--- IMPORTANTE
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.LinkedHashMap; // Importante para mantener el orden
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/consoles")
@@ -23,62 +26,69 @@ public class ConsoleController {
     private ConsoleService consoleService;
 
     @Autowired
-    private UserService userService; // <--- INYECTAMOS EL SERVICIO DE USUARIOS
+    private UserService userService;
 
-@GetMapping
-    public String listConsoles(Model model, Principal principal) { // <--- AÑADIR Principal
+    // 1. LISTA DE COMPAÑÍAS (Para el primer desplegable)
+    private List<String> listaCompanias = Arrays.asList(
+        "Nintendo", "Sony", "Microsoft", "Sega", "Atari", 
+        "SNK (Neo Geo)", "NEC (PC Engine)", "Commodore", "Valve (Steam)", "PC / Otros"
+    );
+
+    // 2. MAPA DE SISTEMAS AGRUPADOS (Para el segundo desplegable)
+    // Usamos LinkedHashMap para que respete el orden de inserción
+    private Map<String, List<String>> mapaSistemas = new LinkedHashMap<>();
+
+    // Constructor para rellenar los datos una sola vez al iniciar
+    public ConsoleController() {
+        mapaSistemas.put("Nintendo", Arrays.asList(
+            "NES", "Super Nintendo (SNES)", "Nintendo 64", "GameCube", "Wii", "Wii U", "Nintendo Switch",
+            "Game Boy", "Game Boy Color", "Game Boy Advance", "Nintendo DS", "Nintendo 3DS"
+        ));
         
-        // 1. Buscamos quién está conectado
+        mapaSistemas.put("Sony", Arrays.asList(
+            "PlayStation 1", "PlayStation 2", "PlayStation 3", "PlayStation 4", "PlayStation 5",
+            "PSP", "PS Vita"
+        ));
+        
+        mapaSistemas.put("Microsoft", Arrays.asList(
+            "Xbox", "Xbox 360", "Xbox One", "Xbox Series X/S"
+        ));
+        
+        mapaSistemas.put("Sega", Arrays.asList(
+            "Master System", "Mega Drive / Genesis", "Sega Saturn", "Dreamcast", "Game Gear"
+        ));
+        
+        mapaSistemas.put("Retro / Clásicas", Arrays.asList(
+            "Atari 2600", "Atari 7800", "Neo Geo AES/MVS", "PC Engine / TurboGrafx-16", "Commodore 64", "Amiga 500"
+        ));
+        
+        mapaSistemas.put("Modernas / Portátiles", Arrays.asList(
+            "Steam Deck", "PC Gaming", "Analogue Pocket", "Otras"
+        ));
+    }
+
+    @GetMapping
+    public String listConsoles(Model model, Principal principal) {
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
-
-        // 2. Pedimos SOLO sus consolas (CAMBIO IMPORTANTE)
-        // ANTES: List<Console> list = consoleService.getAllConsoles();
-        List<Console> list = consoleService.getConsolesByUser(currentUser);
-        
-        model.addAttribute("consoles", list);
-        
+        model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
         return "consoles"; 
     }
 
-    // Mostrar el formulario vacío
+    // AÑADIR
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("console", new Console()); 
+        model.addAttribute("console", new Console());
+        
+        // Pasamos las dos listas a la vista
+        model.addAttribute("listaCompanias", listaCompanias);
+        model.addAttribute("mapaSistemas", mapaSistemas);
+        
         return "form-console";
     }
 
-    // Recibir los datos del formulario y guardar
-    @PostMapping("/save")
-    public String saveConsole(Console console, Principal principal) { // <--- AÑADIMOS PRINCIPAL
-        
-        // 1. Recuperamos el nombre del usuario conectado
-        String username = principal.getName();
-        
-        // 2. Buscamos sus datos completos en la base de datos
-        User currentUser = userService.getUserByUsername(username);
-        
-        // 3. Asignamos la consola a ESE usuario (Adiós al hardcodeo)
-        console.setUser(currentUser);
-        
-        // Auditoría
-        if (console.getCreatedBy() == null || console.getCreatedBy().isEmpty()) {
-             console.setCreatedBy(username);
-        }
-        
-        consoleService.saveConsole(console); // Guardamos en BBDD
-        
-        return "redirect:/consoles"; 
-    }
-
-    @GetMapping("/delete/{id}") 
-    public String deleteConsole(@PathVariable Long id) { 
-        consoleService.deleteConsole(id); 
-        return "redirect:/consoles"; 
-    }
-
-    // Método para EDITAR 
-    @GetMapping("/edit/{id}") 
+    // EDITAR
+    @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         Console console = consoleService.getAllConsoles().stream()
                 .filter(c -> c.getId().equals(id))
@@ -86,6 +96,31 @@ public class ConsoleController {
                 .orElse(null);
 
         model.addAttribute("console", console);
-        return "form-console"; 
+        
+        // Pasamos las dos listas a la vista
+        model.addAttribute("listaCompanias", listaCompanias);
+        model.addAttribute("mapaSistemas", mapaSistemas);
+        
+        return "form-console";
+    }
+
+    @PostMapping("/save")
+    public String saveConsole(Console console, Principal principal) {
+        String username = principal.getName();
+        User currentUser = userService.getUserByUsername(username);
+        console.setUser(currentUser);
+        
+        if (console.getCreatedBy() == null || console.getCreatedBy().isEmpty()) {
+             console.setCreatedBy(username);
+        }
+        
+        consoleService.saveConsole(console);
+        return "redirect:/consoles";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteConsole(@PathVariable Long id) {
+        consoleService.deleteConsole(id);
+        return "redirect:/consoles";
     }
 }

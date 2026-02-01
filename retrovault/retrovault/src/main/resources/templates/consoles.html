@@ -1,62 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>RetroVault - Mis Consolas</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        h1 { color: #333; }
-        .btn-add { background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; }
-        .btn-add:hover { background-color: #0056b3; }
-    </style>
-</head>
+
+<head th:replace="~{fragments/head :: header}"></head>
+
 <body>
-    <div th:replace="~{fragments/nav :: navbar}"></div>
-    <h1>🎮 Mis Consolas</h1>
 
-    <a href="/consoles/new" class="btn-add">➕ AÑADIR NUEVA CONSOLA</a>
-    <br><br>
+    <div class="container">
+        
+        <div th:replace="~{fragments/nav :: navbar}"></div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Plataforma</th>
-                <th>Fabricante</th>
-                <th>Fecha Registro</th>
-                <th>Acciones</th> </tr>
-        </thead>
-        <tbody>
-            <th:block th:each="c : ${consoles}">
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+            <h1>🕹️ Mis Consolas</h1>
+            <a th:href="@{/consoles/new}" class="btn btn-primary">+ Nueva Consola</a>
+        </div>
+
+        <table class="table table-striped table-hover shadow-sm bg-white rounded">
+            <thead class="table-dark">
                 <tr>
-                    <td th:text="${c.id}">1</td>
-                    <td th:text="${c.name}">PlayStation 5</td>
-                    <td th:text="${c.company}">Sony</td>
-                    <td th:text="${c.createdAt}">2026-01-25</td>
+                    <th>Nombre</th>
+                    <th>Compañía</th>
+                    <th>Fecha Registro</th> <th>Juegos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="c : ${consoles}">
                     
-                    <td>
-                        <a th:href="@{/consoles/edit/{id}(id=${c.id})}" 
-                        style="color: blue; font-weight: bold; text-decoration: none; margin-right: 10px;">
-                        ✏️ Editar
-                        </a>
-
-                        <a th:href="@{/consoles/delete/{id}(id=${c.id})}"
-                        onclick="return confirm('¿Seguro?')"
-                        style="color: red; font-weight: bold; text-decoration: none;">
-                        🗑️ Eliminar
-                        </a>
+                    <td th:text="${c.name}" style="font-weight: bold;">Sega Mega Drive</td>
+                    
+                    <td th:text="${c.company}">Sega</td>
+                    
+                    <td th:text="${c.createdAt != null} ? ${#temporals.format(c.createdAt, 'dd/MM/yyyy')} : '-'">
+                        01/01/2023
                     </td>
                     
+                    <td>
+                        <span class="badge bg-info text-dark" 
+                              th:text="${c.games != null ? c.games.size() + ' juegos' : '0 juegos'}">
+                            0 juegos
+                        </span>
+                    </td>
+                    
+                    <td>
+                        <a th:href="@{/consoles/edit/{id}(id=${c.id})}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                        <a th:href="@{/consoles/delete/{id}(id=${c.id})}" class="btn btn-sm btn-danger" 
+                           onclick="return confirm('¿Borrar esta consola borrará también sus juegos asociados?');">🗑️ Borrar</a>
+                    </td>
                 </tr>
-            </th:block>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <div th:if="${consoles.empty}">
-        <p>⚠️ No tienes consolas registradas todavía.</p>
+        <div th:if="${consoles.empty}" class="alert alert-warning text-center">
+            No tienes consolas registradas. ¡Añade tu primera consola! 👇
+        </div>
+
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -14,17 +14,24 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    @Override
+@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        // TRUCO TEMPORAL: Spring Security exige contraseñas encriptadas (con {bcrypt}...).
-        // Como nuestras contraseñas en BBDD son texto plano ("1234"), le añadimos {noop}
-        // para decirle a Spring: "Oye, no intentes desencriptar esto, léelo tal cual".
+        // Recuperamos la contraseña tal cual está en la base de datos
+        String passwordActual = user.getPassword();
+
+        // LÓGICA INTELIGENTE:
+        // Si NO empieza por {noop}, se lo añadimos (para compatibilidad con usuarios viejos Gamer1/Gamer2)
+        // Si YA empieza por {noop} (usuarios nuevos registrados), la usamos tal cual.
+        if (!passwordActual.startsWith("{noop}")) {
+            passwordActual = "{noop}" + passwordActual;
+        }
+
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
-                .password("{noop}" + user.getPassword()) 
+                .password(passwordActual) // Usamos la variable corregida
                 .roles("USER")
                 .build();
     }

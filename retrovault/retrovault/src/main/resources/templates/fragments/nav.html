@@ -1,0 +1,13 @@
+<div th:fragment="navbar" style="border-bottom: 2px solid black; padding: 10px; margin-bottom: 20px;">
+    
+    <a th:href="@{/games}">🎮 Mis Juegos</a> | 
+    <a th:href="@{/consoles}">🕹️ Mis Consolas</a> | 
+    
+    <a th:href="@{/games/new}">[+ Nuevo Juego]</a> | 
+    <a th:href="@{/consoles/new}">[+ Nueva Consola]</a>
+    
+    <form th:action="@{/logout}" method="post" style="display: inline; float: right;">
+        <button type="submit">🚪 Cerrar Sesión</button>
+    </form>
+    
+    <div style="clear: both;"></div> </div>

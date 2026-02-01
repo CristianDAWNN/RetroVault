@@ -15,5 +15,16 @@ public class UserService {
         return userRepository.findByUsername(username).orElse(null);
     }
     
-    // Aquí en el futuro pondremos el método para REGISTRAR usuarios nuevos ;)
+public void saveUser(User user) {
+        // Encriptación "básica" para que Spring Security lo acepte
+        // (En el futuro aquí usaremos un encriptador real)
+        if (!user.getPassword().startsWith("{noop}")) {
+            user.setPassword("{noop}" + user.getPassword());
+        }
+        
+        user.setActive(true); // Activamos el usuario por defecto
+        user.setCreatedAt(java.time.LocalDateTime.now());
+        
+        userRepository.save(user);
+    }
 }

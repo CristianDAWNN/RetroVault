@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-
+    <div th:replace="~{fragments/nav :: navbar}"></div>
     <h1 style="text-align: center;">👾 Ficha de Juego</h1>
 
     <form th:action="@{/games/save}" th:object="${game}" method="post" enctype="multipart/form-data">        

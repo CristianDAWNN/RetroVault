@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-
+    <div th:replace="~{fragments/nav :: navbar}"></div>
     <h1 style="text-align: center;">🎮 Añadir a mi Colección</h1>
 
     <form th:action="@{/consoles/save}" th:object="${console}" method="post" style="background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">

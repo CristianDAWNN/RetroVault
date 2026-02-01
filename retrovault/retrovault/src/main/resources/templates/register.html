@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registro - RetroVault</title>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 50px;">
+        <h1>Únete a RetroVault 💾</h1>
+        
+        <form th:action="@{/saveUser}" th:object="${user}" method="post">
+            
+            <p>
+                <label>Nombre de Usuario:</label><br>
+                <input type="text" th:field="*{username}" required />
+            </p>
+
+            <p>
+                <label>Email:</label><br>
+                <input type="email" th:field="*{email}" required />
+            </p>
+
+            <p>
+                <label>Contraseña:</label><br>
+                <input type="password" th:field="*{password}" required />
+            </p>
+
+            <button type="submit">Registrarme</button>
+        </form>
+
+        <br>
+        <a th:href="@{/login}">¿Ya tienes cuenta? Inicia sesión aquí</a>
+    </div>
+</body>
+</html>

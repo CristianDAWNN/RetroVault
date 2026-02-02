@@ -7,36 +7,70 @@
     <div th:replace="~{fragments/nav :: navbar}"></div>
 
     <div class="container text-center mt-5">
-        <div class="p-5 mb-4 bg-dark rounded-3 shadow">
-            <div class="container-fluid py-5">
-                <h1 class="display-3 fw-bold neon-text-pink">💾 RetroVault</h1>
+        
+        <div class="p-5 mb-5 bg-dark rounded-3 shadow border border-secondary">
+            <div class="container-fluid py-3">
+                <h1 class="display-3 fw-bold neon-text-pink mb-3">💾 RetroVault</h1>
                 
-                <p class="col-md-8 fs-4 mx-auto text-light">Tu santuario personal para organizar tu colección de videojuegos.</p>
+                <p class="col-md-8 fs-4 mx-auto text-light">
+                    La comunidad donde <span class="fw-bold text-info" th:text="${totalUsers}">0</span> coleccionistas
+                    ya han preservado <span class="fw-bold text-warning" th:text="${totalGames}">0</span> videojuegos.
+                </p>
                 
-                <hr class="my-4 text-info">
+                <div class="mt-4" sec:authorize="!isAuthenticated()">
+                    <p class="text-muted mb-4">¿A qué esperas para guardar tu historia?</p>
+                    <a class="btn btn-neon-register btn-lg px-5" th:href="@{/register}" role="button">
+                        🚀 Unirse Ahora
+                    </a>
+                </div>
                 
-                <p class="text-muted">Guarda tus consolas, cataloga tus juegos y nunca olvides qué joyas tienes en la estantería.</p>
-                
-                <br>
-                
-                <a class="btn btn-neon-register btn-lg" th:href="@{/register}" role="button">
-                    🚀 ¡Únete Ahora!
-                </a>
+                <div class="mt-4" sec:authorize="isAuthenticated()">
+                    <a class="btn btn-neon-login btn-lg px-5" th:href="@{/games/new}" role="button">
+                        ➕ Añadir Juego Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${!latestGames.empty}" class="mb-5">
+            <h2 class="text-start mb-4 neon-text border-bottom border-secondary pb-2" style="display:inline-block;">
+                🔥 Recién Añadidos
+            </h2>
+            
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="game : ${latestGames}">
+                    <div class="game-card">
+                        <img th:src="@{'/uploads/' + ${game.coverImg}}" class="game-card-img" alt="Portada">
+                        
+                        <div class="game-info-overlay">
+                            <h5 class="fw-bold text-uppercase" th:text="${game.title}">Título</h5>
+                            
+                            <span class="badge bg-primary mb-2" th:text="${game.console.name}">Consola</span>
+                            
+                            <small class="d-block text-white-50">
+                                Colección de: <span class="text-white" th:text="${game.createdBy}">User</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="row mt-5 text-light">
+        <div class="row mt-5 text-light pt-4">
             <div class="col-md-4">
-                <h2 class="text-info">🕹️ Organiza</h2>
-                <p>Crea tu lista de consolas, desde la Atari hasta la PS5.</p>
+                <div class="fs-1 mb-2">🕹️</div>
+                <h3 class="text-info h4">Organiza</h3>
+                <p class="text-muted small">Gestiona tu colección por sistemas y mantén el orden.</p>
             </div>
             <div class="col-md-4">
-                <h2 class="text-info">👾 Cataloga</h2>
-                <p>Sube fotos de tus juegos, ponles nota y marca su estado.</p>
+                <div class="fs-1 mb-2">📸</div>
+                <h3 class="text-info h4">Preserva</h3>
+                <p class="text-muted small">Sube fotos de tus ediciones y estados de conservación.</p>
             </div>
             <div class="col-md-4">
-                <h2 class="text-info">🔒 Privado</h2>
-                <p>Tus datos son tuyos. Cada usuario tiene su propia colección.</p>
+                <div class="fs-1 mb-2">🌍</div>
+                <h3 class="text-info h4">Descubre</h3>
+                <p class="text-muted small">Mira lo que otros usuarios están coleccionando ahora mismo.</p>
             </div>
         </div>
     </div>

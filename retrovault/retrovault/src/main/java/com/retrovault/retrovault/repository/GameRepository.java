@@ -13,4 +13,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByCreatedBy(String username);
     List<Game> findByTitleContainingIgnoreCaseAndCreatedBy(String title, String createdBy);
     boolean existsByTitleAndConsole(String title, Console console);
+    List<Game> findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
 }

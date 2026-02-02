@@ -21,13 +21,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                //(Invitados)
                 .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
                 
-                //ADMIN
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 
-                //USUARIOS REGISTRADOS
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

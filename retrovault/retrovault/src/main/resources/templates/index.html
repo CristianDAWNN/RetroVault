@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: header}"></head>
-<body class="bg-dark text-white"> <div th:replace="~{fragments/nav :: navbar}"></div>
+
+<body> 
+    
+    <div th:replace="~{fragments/nav :: navbar}"></div>
 
     <div class="container text-center mt-5">
-        <div class="jumbotron">
-            <h1 class="display-3 fw-bold" style="text-shadow: 0 0 10px #d63384;">💾 RetroVault</h1>
-            <p class="lead">Tu santuario personal para organizar tu colección de videojuegos.</p>
-            <hr class="my-4" style="border-color: #0dcaf0;">
-            <p>Guarda tus consolas, cataloga tus juegos y nunca olvides qué joyas tienes en la estantería.</p>
-            
-            <br>
-            
-            <a class="btn btn-primary btn-lg shadow-lg" th:href="@{/register}" role="button">
-                🚀 ¡Únete Ahora!
-            </a>
+        <div class="p-5 mb-4 bg-dark rounded-3 shadow">
+            <div class="container-fluid py-5">
+                <h1 class="display-3 fw-bold neon-text-pink">💾 RetroVault</h1>
+                
+                <p class="col-md-8 fs-4 mx-auto text-light">Tu santuario personal para organizar tu colección de videojuegos.</p>
+                
+                <hr class="my-4 text-info">
+                
+                <p class="text-muted">Guarda tus consolas, cataloga tus juegos y nunca olvides qué joyas tienes en la estantería.</p>
+                
+                <br>
+                
+                <a class="btn btn-neon-register btn-lg" th:href="@{/register}" role="button">
+                    🚀 ¡Únete Ahora!
+                </a>
+            </div>
         </div>
         
-        <div class="row mt-5">
+        <div class="row mt-5 text-light">
             <div class="col-md-4">
-                <h2>🕹️ Organiza</h2>
+                <h2 class="text-info">🕹️ Organiza</h2>
                 <p>Crea tu lista de consolas, desde la Atari hasta la PS5.</p>
             </div>
             <div class="col-md-4">
-                <h2>👾 Cataloga</h2>
+                <h2 class="text-info">👾 Cataloga</h2>
                 <p>Sube fotos de tus juegos, ponles nota y marca su estado.</p>
             </div>
             <div class="col-md-4">
-                <h2>🔒 Privado</h2>
+                <h2 class="text-info">🔒 Privado</h2>
                 <p>Tus datos son tuyos. Cada usuario tiene su propia colección.</p>
             </div>
         </div>

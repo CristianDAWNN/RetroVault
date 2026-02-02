@@ -21,13 +21,9 @@ public class ConsoleService {
     public void saveConsole(Console console) {
         consoleRepository.save(console);
     }
-
-    // CORRECCIÓN 1: Este método debe ser void y cerrar su llave antes de empezar el siguiente
     public void deleteConsole(Long id) {
         consoleRepository.deleteById(id);
     } 
-
-    // CORRECCIÓN 2: Este método va fuera, separado del anterior
     public List<Console> getConsolesByUser(User user) {
         return consoleRepository.findByUser(user);
     }

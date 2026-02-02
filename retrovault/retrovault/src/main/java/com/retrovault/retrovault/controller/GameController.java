@@ -33,16 +33,11 @@ public class GameController {
 
     @Autowired
     private UserService userService;
-
-    // LISTAR JUEGOS
-// Modificamos este método
     @GetMapping
     public String listGames(Model model, Principal principal, @RequestParam(value = "keyword", required = false) String keyword) {
         String username = principal.getName();
         
         List<Game> list;
-        
-        // Si hay palabra clave, buscamos. Si no, listamos todo.
         if (keyword != null) {
             list = gameService.searchGames(keyword, username);
         } else {
@@ -54,47 +49,30 @@ public class GameController {
         
         return "games"; 
     }
-
-    // FORMULARIO DE AÑADIR (CORREGIDO EL DESPLEGABLE)
     @GetMapping("/new")
     public String showCreateForm(Model model, Principal principal) {
         model.addAttribute("game", new Game());
-        
-        // --- CORRECCIÓN AQUÍ ---
-        // 1. Buscamos al usuario conectado
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
-        
-        // 2. Pasamos SOLO las consolas de este usuario al desplegable
         model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
         
         return "form-game";
     }
-
-    // GUARDAR (Mantenemos la lógica de la imagen y el usuario)
 @PostMapping("/save")
     public String saveGame(@Valid @ModelAttribute Game game, 
                            BindingResult result, 
                            @RequestParam("file") MultipartFile file,
                            Principal principal,
                            Model model) {
-        
-        // --- VALIDACIÓN ANTI-DUPLICADOS ---
-        // Solo si es juego nuevo Y ya existe ese título en esa consola
         if (game.getId() == null && gameService.existsByTitleAndConsole(game.getTitle(), game.getConsole())) {
             result.rejectValue("title", "error.game", "⚠️ Ya tienes este juego en la plataforma " + game.getConsole().getName());
         }
-
-        // 1. SI HAY ERRORES
         if (result.hasErrors()) {
             String username = principal.getName();
             User currentUser = userService.getUserByUsername(username);
             model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
             return "form-game";
         }
-
-        
-        // Guardado de Imagen
         if (!file.isEmpty()) {
             try {
                 Path directorioImagenes = Paths.get("uploads");
@@ -115,8 +93,6 @@ public class GameController {
                 e.printStackTrace(); 
             }
         } else {
-            // TRUCO: Si estamos editando y no suben foto nueva, mantenemos la vieja
-            // (Esto ya lo gestiona el input hidden del html, pero por seguridad)
             if (game.getId() != null) {
                 Game existingGame = gameService.getGameById(game.getId());
                 if (existingGame != null && game.getCoverImg() == null) {
@@ -124,8 +100,6 @@ public class GameController {
                 }
             }
         }
-
-        // Auditoría
         String username = principal.getName();
         if (game.getId() == null) {
             game.setCreatedBy(username);
@@ -136,22 +110,16 @@ public class GameController {
         gameService.saveGame(game);
         return "redirect:/games";
     }
-
-    // FORMULARIO DE EDITAR (CORREGIDO EL DESPLEGABLE)
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model, Principal principal) {
         Game game = gameService.getGameById(id);
         model.addAttribute("game", game);
-        
-        // --- CORRECCIÓN AQUÍ TAMBIÉN ---
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
         model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
         
         return "form-game";
     }
-
-    // BORRAR
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
         gameService.deleteGame(id);

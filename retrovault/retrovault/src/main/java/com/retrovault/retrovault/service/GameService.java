@@ -29,18 +29,13 @@ public class GameService {
     public Game getGameById(Long id) {
         return gameRepository.findById(id).orElse(null);
     }
-
-    // Faltaba cerrar este método con }
     public List<Game> getGamesByUser(String username) {
         return gameRepository.findByCreatedBy(username);
     }
-
-    // Aquí empieza la búsqueda (he borrado el duplicado malo)
     public List<Game> searchGames(String keyword, String username) {
         if (keyword != null && !keyword.isEmpty()) {
             return gameRepository.findByTitleContainingIgnoreCaseAndCreatedBy(keyword, username);
         }
-        // Si la búsqueda está vacía, devolvemos la lista normal
         return gameRepository.findByCreatedBy(username);
         }
     public boolean existsByTitleAndConsole(String title, Console console) {

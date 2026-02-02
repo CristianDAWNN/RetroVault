@@ -7,7 +7,5 @@ import java.util.List;
 
 public interface ConsoleRepository extends JpaRepository<Console, Long> {
     List<Console> findByUser(User user);
-    
-    // NUEVO: Comprobar si existe una consola con ese nombre para ese usuario
     boolean existsByNameAndUser(String name, User user);
 }

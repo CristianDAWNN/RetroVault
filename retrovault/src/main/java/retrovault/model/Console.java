@@ -20,8 +20,6 @@ public class Console {
     private String name;
 
     private String company;
-
-    // --- AUDITORÍA ---
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     

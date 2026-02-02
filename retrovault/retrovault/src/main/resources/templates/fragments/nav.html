@@ -1,40 +1,51 @@
-<div th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand neon-text fw-bold" th:href="@{/}">💾 RetroVault</a>
+<nav th:fragment="navbar" xmlns:th="http://www.thymeleaf.org" 
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4 rounded border-bottom border-secondary">
+     
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold neon-text" th:href="@{/}">👾 RetroVault</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
                 
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0" sec:authorize="isAuthenticated()">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/games}">🎮 Mis Juegos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/consoles}">🕹️ Mis Consolas</a>
-                    </li>
-                </ul>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/games}">Mis Juegos</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/consoles}">Mis Consolas</a>
+                </li>
 
-                <div class="d-flex">
-                    
-                    <div sec:authorize="!isAuthenticated()">
-                        <a th:href="@{/login}" class="btn btn-neon-login me-2">Iniciar Sesión</a>
-                        <a th:href="@{/register}" class="btn btn-neon-register">Registrarse</a>
-                    </div>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link text-warning fw-bold" th:href="@{/admin/users}">⚙️ Panel Admin</a>
+                </li>
+            </ul>
 
-                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
-                        <span class="text-white me-3">Hola, <b sec:authentication="name">Usuario</b> 👋</span>
-                        
-                        <form th:action="@{/logout}" method="post">
-                            <button type="submit" class="btn btn-outline-light btn-sm">Cerrar Sesión 🚪</button>
-                        </form>
-                    </div>
+            <div class="d-flex align-items-center">
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn btn-neon-login me-2 btn-sm">
+                        Entrar
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-neon-register btn-sm">
+                        Registrarse
+                    </a>
+                </div>
 
+                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
+                    <span class="text-white small">
+                        Hola, <b sec:authentication="name" class="text-info">User</b>
+                        <span class="badge bg-danger ms-1" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+                    </form>
                 </div>
             </div>
         </div>
-    </nav>
-</div>
+    </div>
+</nav>

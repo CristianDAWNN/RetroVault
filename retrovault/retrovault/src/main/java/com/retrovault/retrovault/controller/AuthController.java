@@ -2,9 +2,11 @@ package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,24 +17,33 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    // Mostrar formulario de registro
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
+    public String registerForm(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
 
-    // Procesar el registro
-    @PostMapping("/saveUser")
-    public String registerUser(@ModelAttribute User user) {
-        // Guardamos el usuario
-        userService.saveUser(user);
-        // Redirigimos al login para que entre
-        return "redirect:/login"; 
-    }
+    @PostMapping("/register")
+    public String registerUser(@Valid @ModelAttribute User user, 
+                               BindingResult result, 
+                               Model model) {
+        
+        User existingUser = userService.getUserByUsername(user.getUsername());
+        if (existingUser != null) {
+            result.rejectValue("username", "error.user", "⚠️ Este nombre de usuario ya está cogido.");
+        }
 
-    @GetMapping("/login")
-    public String showLoginForm() {
-        return "login"; // Carga el archivo login.html
+        if (result.hasErrors()) {
+            return "register"; 
+        }
+
+        userService.saveUser(user);
+        
+        return "redirect:/login?success";
     }
 }

@@ -15,4 +15,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     boolean existsByTitleAndConsole(String title, Console console);
     List<Game> findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
     List<Game> findTop3ByCoverImgNotNullOrderByRateDesc();
+    long countByCreatedBy(String username);
 }

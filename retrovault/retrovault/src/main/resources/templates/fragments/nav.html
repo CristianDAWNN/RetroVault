@@ -36,13 +36,27 @@
                     </a>
                 </div>
 
-                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
-                    <span class="text-white small">
-                        Hola, <b sec:authentication="name" class="text-info">User</b>
-                        <span class="badge bg-danger ms-1" sec:authorize="hasRole('ADMIN')">ADMIN</span>
-                    </span>
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+                <div sec:authorize="isAuthenticated()" th:if="${currentUser != null}" class="d-flex align-items-center gap-3">
+                    
+                    <a th:href="@{/profile}" class="text-decoration-none d-flex align-items-center gap-2 py-1 px-2 rounded hover-bg-dark" title="Ir a mi perfil">
+                        
+                        <img th:if="${currentUser.avatar != null}" 
+                             th:src="@{'/uploads/avatars/' + ${currentUser.avatar}}" 
+                             class="rounded-circle border border-secondary"
+                             style="width: 32px; height: 32px; object-fit: cover;">
+                             
+                        <img th:if="${currentUser.avatar == null}" 
+                             src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
+                             class="rounded-circle border border-secondary bg-light"
+                             style="width: 32px; height: 32px; object-fit: cover;">
+                        
+                        <span class="text-white small fw-bold" th:text="${currentUser.username}">User</span>
+                    </a>
+
+                    <span class="badge bg-danger" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+
+                    <form th:action="@{/logout}" method="post" class="ms-1">
+                        <button type="submit" class="btn btn-outline-light btn-sm py-0" style="font-size: 0.8rem;">Salir</button>
                     </form>
                 </div>
             </div>

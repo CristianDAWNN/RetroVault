@@ -1,0 +1,44 @@
+<footer th:fragment="footer" class="bg-dark text-white-50 py-5 mt-auto border-top border-secondary">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h4 class="fw-bold neon-text-pink mb-3">👾 RetroVault</h4>
+                <p class="small">
+                    La plataforma definitiva para gestionar, preservar y compartir tu colección de videojuegos. 
+                    Hecha por coleccionistas, para coleccionistas.
+                </p>
+            </div>
+
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="text-white mb-3">Explorar</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a th:href="@{/}" class="text-decoration-none text-white-50 hover-white">🏠 Inicio</a>
+                    </li>
+                    <li class="mb-2" sec:authorize="isAuthenticated()">
+                        <a th:href="@{/games}" class="text-decoration-none text-white-50 hover-white">🎮 Mis Juegos</a>
+                    </li>
+                    <li class="mb-2" sec:authorize="isAuthenticated()">
+                        <a th:href="@{/profile}" class="text-decoration-none text-white-50 hover-white">👤 Mi Perfil</a>
+                    </li>
+                    <li class="mb-2" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/register}" class="text-decoration-none text-warning">🚀 Únete a nosotros</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-md-4">
+                <h5 class="text-white mb-3">Conecta</h5>
+                <div class="d-flex gap-3 mb-3">
+                    <a href="#" class="fs-4 text-white-50 text-decoration-none hover-white">🐦</a>
+                    <a href="#" class="fs-4 text-white-50 text-decoration-none hover-white">📷</a>
+                    <a href="#" class="fs-4 text-white-50 text-decoration-none hover-white">💻</a>
+                </div>
+                <p class="small mb-0">&copy; 2026 RetroVault Inc.</p>
+                <p class="small" style="font-size: 0.75rem;">Desarrollado con Spring Boot y mucho ☕</p>
+            </div>
+            
+        </div>
+    </div>
+</footer>

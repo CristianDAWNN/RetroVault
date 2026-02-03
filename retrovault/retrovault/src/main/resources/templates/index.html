@@ -56,6 +56,41 @@
             </div>
         </div>
         
+        <div th:if="${!topRatedGames.empty}" class="mb-5 mt-5">
+            <div class="p-4 rounded-3 shadow-lg" style="background: linear-gradient(45deg, #b98a04, #5c4502);">
+                <h2 class="text-white fw-bold mb-4">
+                    🏆 Salón de la Fama <small class="fs-6 fw-normal text-white-50">(Mejores valorados por la comunidad)</small>
+                </h2>
+                
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="col" th:each="game : ${topRatedGames}">
+                        <div class="card h-100 border-0 shadow-lg" style="background-color: rgba(0,0,0,0.3);">
+                            <div class="row g-0 align-items-center">
+                                <div class="col-4">
+                                    <img th:src="@{'/uploads/' + ${game.coverImg}}" class="img-fluid rounded-start" 
+                                         style="height: 100px; width: 100%; object-fit: cover;" alt="Cover">
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body py-2">
+                                        <h6 class="card-title text-warning fw-bold text-uppercase mb-1" th:text="${game.title}">Título</h6>
+                                        
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span class="badge bg-dark border border-warning text-warning">
+                                                ★ <span th:text="${game.rate}">10</span>/10
+                                            </span>
+                                            <small class="text-white-50" style="font-size: 0.7rem;">
+                                                by <span th:text="${game.createdBy}">User</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-5 text-light pt-4">
             <div class="col-md-4">
                 <div class="fs-1 mb-2">🕹️</div>

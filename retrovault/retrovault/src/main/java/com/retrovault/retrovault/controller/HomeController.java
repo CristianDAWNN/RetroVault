@@ -25,10 +25,12 @@ public class HomeController {
         long totalUsers = userRepository.count();
         
         List<Game> latestGames = gameRepository.findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
+        List<Game> topRatedGames = gameRepository.findTop3ByCoverImgNotNullOrderByRateDesc();
 
         model.addAttribute("totalGames", totalGames);
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("latestGames", latestGames);
+        model.addAttribute("topRatedGames", topRatedGames);
 
         return "index";
     }

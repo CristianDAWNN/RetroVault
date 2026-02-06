@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,6 +80,14 @@ public class UserService {
             
             user.setAvatar(fileName);
             
+            userRepository.save(user);
+        }
+    }
+
+    public void updateLastLogin(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setLastLogin(LocalDateTime.now());
             userRepository.save(user);
         }
     }

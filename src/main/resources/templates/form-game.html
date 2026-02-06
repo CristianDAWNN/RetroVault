@@ -44,9 +44,31 @@
                                 <div th:if="${consoles.empty}" class="form-text text-danger">
                                     ⚠️ No tienes consolas creadas. Crea una primero.
                                 </div>
-
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('console')}" th:errors="*{console}">
                                     Debes seleccionar una plataforma.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Género</label>
+                                <select th:field="*{genre}" class="form-select" th:errorclass="is-invalid">
+                                    <option value="" disabled selected>-- Selecciona un género --</option>
+                                    <option value="Acción">💥 Acción</option>
+                                    <option value="Aventura">🗺️ Aventura</option>
+                                    <option value="RPG">⚔️ RPG / Rol</option>
+                                    <option value="Plataformas">🏃 Plataformas</option>
+                                    <option value="Deportes">⚽ Deportes</option>
+                                    <option value="Carreras">🏎️ Carreras</option>
+                                    <option value="Lucha">🥊 Lucha</option>
+                                    <option value="Estrategia">🧠 Estrategia</option>
+                                    <option value="Terror">👻 Terror</option>
+                                    <option value="Shooter">🔫 Shooter</option>
+                                    <option value="Puzzle">🧩 Puzzle</option>
+                                    <option value="Simulación">🏗️ Simulación</option>
+                                    <option value="Retro">👾 Arcade / Retro</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}">
+                                    El género es obligatorio.
                                 </div>
                             </div>
 

@@ -60,7 +60,6 @@ public class UserSeeder implements CommandLineRunner {
         createGame("Super Smash Bros Melee", "Lucha", LocalDate.of(2001, 11, 21), 10, gc, g9);
         createGame("Luigi's Mansion", "Aventura", LocalDate.of(2001, 9, 14), 8, gc, g9);
         
-        System.out.println("✅ ¡Datos sembrados correctamente!");
     }
 
     // --- MÉTODOS AUXILIARES ---

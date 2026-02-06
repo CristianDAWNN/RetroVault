@@ -33,6 +33,7 @@ public class GameController {
 
     @Autowired
     private UserService userService;
+
     @GetMapping
     public String listGames(Model model, Principal principal, @RequestParam(value = "keyword", required = false) String keyword) {
         String username = principal.getName();
@@ -45,10 +46,11 @@ public class GameController {
         }
         
         model.addAttribute("games", list);
-        model.addAttribute("keyword", keyword); // Para mantener lo escrito en la cajita
+        model.addAttribute("keyword", keyword);
         
         return "games"; 
     }
+
     @GetMapping("/new")
     public String showCreateForm(Model model, Principal principal) {
         model.addAttribute("game", new Game());
@@ -58,21 +60,28 @@ public class GameController {
         
         return "form-game";
     }
-@PostMapping("/save")
+
+    @PostMapping("/save")
     public String saveGame(@Valid @ModelAttribute Game game, 
                            BindingResult result, 
                            @RequestParam("file") MultipartFile file,
                            Principal principal,
                            Model model) {
+        
+        // Validación de título duplicado en la misma consola
         if (game.getId() == null && gameService.existsByTitleAndConsole(game.getTitle(), game.getConsole())) {
             result.rejectValue("title", "error.game", "⚠️ Ya tienes este juego en la plataforma " + game.getConsole().getName());
         }
+
+        // Si hay errores en el formulario, volvemos a mostrarlo
         if (result.hasErrors()) {
             String username = principal.getName();
             User currentUser = userService.getUserByUsername(username);
             model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
             return "form-game";
         }
+
+        // LÓGICA DE SUBIDA DE IMAGEN
         if (!file.isEmpty()) {
             try {
                 Path directorioImagenes = Paths.get("uploads");
@@ -82,7 +91,13 @@ public class GameController {
                     Files.createDirectories(directorioImagenes);
                 }
 
-                String nombreArchivo = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                // Limpiamos el nombre original de caracteres raros (%, $, espacios, ñ...)
+                String nombreOriginal = file.getOriginalFilename();
+                String nombreLimpio = nombreOriginal.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+
+                // Usamos el nombre limpio para crear el archivo final
+                String nombreArchivo = UUID.randomUUID().toString() + "_" + nombreLimpio;
+                
                 byte[] bytesImg = file.getBytes();
                 Path rutaCompleta = Paths.get(rutaAbsoluta + "/" + nombreArchivo);
                 Files.write(rutaCompleta, bytesImg);
@@ -93,6 +108,7 @@ public class GameController {
                 e.printStackTrace(); 
             }
         } else {
+            // Si no sube nueva foto pero está editando, mantenemos la anterior
             if (game.getId() != null) {
                 Game existingGame = gameService.getGameById(game.getId());
                 if (existingGame != null && game.getCoverImg() == null) {
@@ -100,6 +116,7 @@ public class GameController {
                 }
             }
         }
+
         String username = principal.getName();
         if (game.getId() == null) {
             game.setCreatedBy(username);
@@ -110,6 +127,7 @@ public class GameController {
         gameService.saveGame(game);
         return "redirect:/games";
     }
+
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model, Principal principal) {
         Game game = gameService.getGameById(id);
@@ -120,6 +138,7 @@ public class GameController {
         
         return "form-game";
     }
+
     @GetMapping("/delete/{id}")
     public String deleteGame(@PathVariable Long id) {
         gameService.deleteGame(id);

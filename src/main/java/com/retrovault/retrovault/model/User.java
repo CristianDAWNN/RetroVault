@@ -1,9 +1,9 @@
 package com.retrovault.retrovault.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,15 +20,23 @@ public class User {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "El usuario es obligatorio")
+    @Size(min = 4, max = 20, message = "El usuario debe tener entre 4 y 20 caracteres")
+    @Pattern(regexp = "^\\S+$", message = "El usuario no puede contener espacios")
     private String username;
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "Debes introducir un correo válido")
     private String email;
 
-    private String role = "USER";
-
     @Column(nullable = false)
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 4, message = "La contraseña debe tener al menos 4 caracteres")
+    @Pattern(regexp = "^\\S+$", message = "La contraseña no puede contener espacios")
     private String password;
+
+    private String role;
 
     private String avatar;
 
@@ -44,7 +52,6 @@ public class User {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
     private List<Console> consoles;
 
     @PrePersist

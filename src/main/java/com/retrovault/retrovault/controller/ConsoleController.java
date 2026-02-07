@@ -103,13 +103,13 @@ public class ConsoleController {
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
         if (console.getId() == null && consoleService.existsByNameAndUser(console.getName(), currentUser)) {
-            result.rejectValue("name", "error.console", "⚠️ ¡Ya tienes esta consola en tu colección!");
+            result.rejectValue("name", "error.console", "¡Ya tienes esta consola en tu colección!");
         }
         if (result.hasErrors()) {
             model.addAttribute("listaCompanias", listaCompanias);
             model.addAttribute("mapaSistemas", mapaSistemas);
             
-            return "form-console"; // Volvemos al formulario para que Thymeleaf pinte el error
+            return "form-console";
         }
         console.setUser(currentUser);
         

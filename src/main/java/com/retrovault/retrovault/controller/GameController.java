@@ -70,10 +70,9 @@ public class GameController {
         
         // Validación de título duplicado en la misma consola
         if (game.getId() == null && gameService.existsByTitleAndConsole(game.getTitle(), game.getConsole())) {
-            result.rejectValue("title", "error.game", "⚠️ Ya tienes este juego en la plataforma " + game.getConsole().getName());
+            result.rejectValue("title", "error.game", "Ya tienes este juego en la plataforma " + game.getConsole().getName());
         }
 
-        // Si hay errores en el formulario, volvemos a mostrarlo
         if (result.hasErrors()) {
             String username = principal.getName();
             User currentUser = userService.getUserByUsername(username);

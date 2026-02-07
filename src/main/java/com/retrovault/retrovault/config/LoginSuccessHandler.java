@@ -27,8 +27,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         
         // Guardar la fecha en la base de datos
         userService.updateLastLogin(username);
-        System.out.println("🕒 Login registrado para: " + username);
-
+        
         //Continuar con la redirección normal
         super.onAuthenticationSuccess(request, response, authentication);
     }

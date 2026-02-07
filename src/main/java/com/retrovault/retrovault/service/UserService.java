@@ -36,10 +36,16 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+public void saveUser(User user) {
+        if (user.getId() == null || !user.getPassword().startsWith("$2a$")) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        
         user.setActive(true);
-        user.setCreatedAt(java.time.LocalDateTime.now());
+        
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(java.time.LocalDateTime.now());
+        }
         
         if (user.getRole() == null) {
             user.setRole("USER");
@@ -93,5 +99,19 @@ public class UserService {
             user.setLastLogin(LocalDateTime.now());
             userRepository.save(user);
         }
+    }
+
+    //AÑADIR EXPERIENCIA Y SUBIR DE NIVEL
+    public void addExperience(User user, int amount){
+        int currentXp = user.getExperience() + amount;
+        int nextLevelXp = user.getXpToNextLevel();
+
+        while (currentXp >= nextLevelXp) {
+            currentXp -= nextLevelXp;
+            user.setLevel(user.getLevel() + 1);
+            nextLevelXp = user.getXpToNextLevel();
+        }
+        user.setExperience(currentXp);
+        userRepository.save(user);
     }
 }

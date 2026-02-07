@@ -57,16 +57,17 @@ public class User {
     //SISTEMA DE NIVELES
     private int level = 1;
     private int experience = 0;
-
-    // MÉTODO PARA AÑADIR EXPERIENCIA Y SUBIR DE NIVEL
+    
     public int getXpToNextLevel() {
-        return this.level * 100; //Cada lvl pide 100 más que el anterior
+        return this.level * 100; 
     }
 
-    //Calcular el % de la barra
     public int getExpPercentage() {
-        if (getExpPercentage() == 0) return 0;
-        return (int) ((double) experience / getXpToNextLevel() * 100);
+        int meta = getXpToNextLevel();
+        
+        if (meta == 0) return 0;
+        
+        return (int) ((double) this.experience / meta * 100);
     }
 
     @PrePersist

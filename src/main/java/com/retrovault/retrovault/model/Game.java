@@ -25,7 +25,6 @@ public class Game {
     @Column(nullable = false)
     @NotBlank(message = "El género es obligatorio")
     private String genre;
-    // ---------------------------
 
     @Column(name = "launch_date")
     private LocalDate launchDate; 

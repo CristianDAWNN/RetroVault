@@ -54,6 +54,21 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Console> consoles;
 
+    //SISTEMA DE NIVELES
+    private int level = 1;
+    private int experience = 0;
+
+    // MÉTODO PARA AÑADIR EXPERIENCIA Y SUBIR DE NIVEL
+    public int getXpToNextLevel() {
+        return this.level * 100; //Cada lvl pide 100 más que el anterior
+    }
+
+    //Calcular el % de la barra
+    public int getExpPercentage() {
+        if (getExpPercentage() == 0) return 0;
+        return (int) ((double) experience / getXpToNextLevel() * 100);
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

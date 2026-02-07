@@ -80,6 +80,9 @@ public class GameController {
             return "form-game";
         }
 
+        // DETECTAMOS SI ES UN JUEGO NUEVO ANTES DE GUARDAR
+        boolean isNewGame = (game.getId() == null);
+
         // LÓGICA DE SUBIDA DE IMAGEN
         if (!file.isEmpty()) {
             try {
@@ -90,11 +93,8 @@ public class GameController {
                     Files.createDirectories(directorioImagenes);
                 }
 
-                // Limpiamos el nombre original de caracteres raros (%, $, espacios, ñ...)
                 String nombreOriginal = file.getOriginalFilename();
                 String nombreLimpio = nombreOriginal.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
-
-                // Usamos el nombre limpio para crear el archivo final
                 String nombreArchivo = UUID.randomUUID().toString() + "_" + nombreLimpio;
                 
                 byte[] bytesImg = file.getBytes();
@@ -107,7 +107,6 @@ public class GameController {
                 e.printStackTrace(); 
             }
         } else {
-            // Si no sube nueva foto pero está editando, mantenemos la anterior
             if (game.getId() != null) {
                 Game existingGame = gameService.getGameById(game.getId());
                 if (existingGame != null && game.getCoverImg() == null) {
@@ -124,6 +123,14 @@ public class GameController {
         }
         
         gameService.saveGame(game);
+
+        // SISTEMA DE XP
+        if (isNewGame) {
+            User currentUser = userService.getUserByUsername(username);
+            userService.addExperience(currentUser, 50);
+            System.out.println("🆙 " + username + " ha ganado 50 XP!");
+        }
+
         return "redirect:/games";
     }
 

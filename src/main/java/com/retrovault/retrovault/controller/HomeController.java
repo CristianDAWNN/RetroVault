@@ -26,36 +26,33 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
 
-        // Totales users y games
+        // Totales
         long totalGames = gameRepository.count();
         long totalUsers = userRepository.count();
 
-        // Ranking usuarios por XP
+        // Ranking Usuarios (XP)
         List<User> topPlayers = userRepository.findAll(Sort.by(Sort.Direction.DESC, "level", "experience"))
                                               .stream()
                                               .limit(3)
                                               .collect(Collectors.toList());
 
-        // Top 3 Juegos mejor valorados
-        List<Game> topGames = gameRepository
-                .findTop3ByCoverImgNotNullOrderByRateDesc();
+        // NUEVO: Top 3 Juegos por Media de Valoración
+        List<Object[]> communityTopGames = gameRepository.findTopRatedTitles(PageRequest.of(0, 3));
 
         // Últimos juegos añadidos
-        List<Game> latestGames = gameRepository
-                .findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
+        List<Game> latestGames = gameRepository.findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
 
-        // Top 5 géneros más jugados
-        List<Object[]> topGenres = gameRepository
-                .findTopGenres(PageRequest.of(0, 5));
+        // Top 5 géneros
+        List<Object[]> topGenres = gameRepository.findTopGenres(PageRequest.of(0, 5));
 
         model.addAttribute("title", "Inicio");
         
-        // Datos para el Podio
         model.addAttribute("totalGames", totalGames);
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("topPlayers", topPlayers);
 
-        model.addAttribute("topGames", topGames);
+        model.addAttribute("communityTopGames", communityTopGames);
+        
         model.addAttribute("latestGames", latestGames);
         model.addAttribute("topGenres", topGenres);
 
@@ -63,12 +60,8 @@ public class HomeController {
     }
 
     @GetMapping("/privacy")
-    public String privacy() {
-        return "privacy";
-    }
+    public String privacy() { return "privacy"; }
 
     @GetMapping("/terms")
-    public String terms() {
-        return "privacy";
-    }
+    public String terms() { return "privacy"; }
 }

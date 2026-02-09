@@ -25,7 +25,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-
         // Totales
         long totalGames = gameRepository.count();
         long totalUsers = userRepository.count();
@@ -36,23 +35,20 @@ public class HomeController {
                                               .limit(3)
                                               .collect(Collectors.toList());
 
-        // NUEVO: Top 3 Juegos por Media de Valoración
+        // Top 3 Juegos (Media)
         List<Object[]> communityTopGames = gameRepository.findTopRatedTitles(PageRequest.of(0, 3));
 
-        // Últimos juegos añadidos
+        // Últimos juegos
         List<Game> latestGames = gameRepository.findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
 
         // Top 5 géneros
         List<Object[]> topGenres = gameRepository.findTopGenres(PageRequest.of(0, 5));
 
         model.addAttribute("title", "Inicio");
-        
         model.addAttribute("totalGames", totalGames);
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("topPlayers", topPlayers);
-
         model.addAttribute("communityTopGames", communityTopGames);
-        
         model.addAttribute("latestGames", latestGames);
         model.addAttribute("topGenres", topGenres);
 
@@ -64,4 +60,51 @@ public class HomeController {
 
     @GetMapping("/terms")
     public String terms() { return "privacy"; }
+
+    @GetMapping("/ranking")
+    public String showRanking(Model model) {
+        
+        //OBTENER DATOS CRUDOS
+        List<Object[]> topGenres = gameRepository.findTopGenres(PageRequest.of(0, 10));
+        
+        List<User> rankedUsers = userRepository.findAll(
+            PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "level", "experience"))
+        ).getContent();
+        
+        List<Object[]> rankedConsoles = gameRepository.findTopConsoles(PageRequest.of(0, 10));
+
+        //PREPARAR LISTAS SIMPLES PARA EL JAVASCRIPT
+        
+        List<String> genreLabels = topGenres.stream()
+            .map(g -> g[0].toString())
+            .collect(Collectors.toList());
+            
+        List<Long> genreCounts = topGenres.stream()
+            .map(g -> (Long) g[1])
+            .collect(Collectors.toList());
+
+        List<String> consoleLabels = rankedConsoles.stream()
+            .map(c -> (String) c[0]) 
+            .collect(Collectors.toList());
+            
+        List<Long> consoleCounts = rankedConsoles.stream()
+            .map(c -> (Long) c[2])
+            .collect(Collectors.toList());
+
+        //ENVIAR AL MODELO
+        model.addAttribute("title", "Ranking Global");
+        
+        // Datos completos para las tablas
+        model.addAttribute("topGenres", topGenres);
+        model.addAttribute("rankedUsers", rankedUsers);
+        model.addAttribute("rankedConsoles", rankedConsoles);
+        
+        // Listas limpias para los gráficos
+        model.addAttribute("genreLabels", genreLabels);
+        model.addAttribute("genreCounts", genreCounts);
+        model.addAttribute("consoleLabels", consoleLabels);
+        model.addAttribute("consoleCounts", consoleCounts);
+        
+        return "ranking";
+    }
 }

@@ -1,80 +1,246 @@
 /* src/main/resources/static/css/style.css */
 
+/* =========================================
+   VARIABLES Y TEMA (PALETA TACTICAL MATTE)
+   ========================================= */
+:root {
+    --val-black: #111111;       /* Fondo navbar/footer */
+    --val-dark-grey: #292929;   /* Fondo body */
+    --val-card-bg: #343a40;     /* Fondo tarjetas */
+    --val-red: #ff4655;         /* Rojo de acento */
+    --val-white: #ece8e1;       /* Blanco roto (texto) */
+}
+
 /* ===========================
-   ESTILOS GENERALES Y LAYOUT)
+   ESTILOS GENERALES Y LAYOUT
    =========================== */
 body {
-    background-color: #212529;
-    color: white;
+    background-color: var(--val-dark-grey);
+    color: var(--val-white);
     min-height: 100vh;
+    
+    font-family: 'Kanit', 'Segoe UI', sans-serif; 
     
     display: flex;
     flex-direction: column;
+    margin: 0;
+    padding-top: 100px; 
 }
-
 
 body > .container {
     flex: 1;
 }
 
-/* ===========================
-   TEXTOS NEÓN
-   =========================== */
-.neon-text {
-    color: #fff;
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0dcaf0, 0 0 30px #0dcaf0;
+/* Links generales sin decoración */
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
-.neon-text-pink {
-    color: #fff;
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #d63384, 0 0 30px #d63384;
+/* Utilidad hover simple */
+.hover-white:hover {
+    color: white !important;
 }
 
 /* ===========================
-   BOTONES NEÓN
+   NAVBAR
    =========================== */
-.btn-neon-login {
-    border: 1px solid #0dcaf0;
-    color: #0dcaf0;
+.val-navbar {
+    background-color: var(--val-black);
+    height: 80px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    top: 0; 
+}
+
+/* Logo */
+.val-brand {
+    color: var(--val-red) !important;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     transition: 0.3s;
-    background: transparent;
 }
 
-.btn-neon-login:hover {
-    background-color: #0dcaf0;
-    color: black;
-    box-shadow: 0 0 10px #0dcaf0, 0 0 20px #0dcaf0;
+.val-brand:hover {
+    color: white !important;
 }
 
-.btn-neon-register {
-    background-color: #d63384;
+/* Enlaces del Menú */
+.val-link {
+    color: var(--val-white) !important;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 28px 15px !important;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Línea roja inferior al pasar el ratón */
+.val-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 4px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--val-red);
+    transition: width 0.3s ease;
+}
+
+.val-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.val-link:hover::after {
+    width: 100%;
+}
+
+.val-toggler-icon {
+    filter: invert(1);
+}
+
+/* ===========================
+   BOTONES DE CABECERA
+   =========================== */
+
+/* Botón Iniciar Sesión */
+.val-btn-login {
+    color: var(--val-white);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.val-btn-login:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Botón Registrarse */
+.val-btn-register {
+    background-color: var(--val-red);
     color: white;
-    border: 1px solid #d63384;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 4px;
     transition: 0.3s;
+    border: 1px solid var(--val-red);
 }
 
-.btn-neon-register:hover {
-    background-color: #a61e61;
-    border-color: #a61e61;
-    box-shadow: 0 0 10px #d63384, 0 0 20px #d63384;
+.val-btn-register:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
+}
+
+/* Botón Logout (Icono de salida) */
+.val-btn-logout {
+    background: none;
+    border: none;
+    color: #6c757d;
+    transition: 0.2s;
+    padding: 0;
+}
+
+.val-btn-logout:hover {
+    color: var(--val-red);
 }
 
 /* ===========================
-   TARJETAS DE JUEGOS
+   PERFIL DE USUARIO
+   =========================== */
+.val-user-profile {
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.val-user-profile:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.val-avatar {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--val-dark-grey);
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+.val-footer {
+    background-color: var(--val-black);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+}
+
+.val-footer-heading {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+.val-footer-link {
+    color: var(--val-white);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.8rem;
+    transition: 0.2s ease;
+}
+
+.val-footer-link:hover {
+    color: var(--val-red);
+    transform: translateX(5px);
+}
+
+.val-footer .val-btn-register {
+    border-radius: 4px;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.val-footer i {
+    transition: color 0.3s;
+}
+.val-footer i:hover {
+    color: var(--val-white) !important;
+}
+
+/* ===========================
+   CARDS DE JUEGOS
    =========================== */
 .game-card {
     height: 350px;
     overflow: hidden;
     position: relative;
     border: none;
-    border-radius: 10px;
+    border-radius: 4px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    background-color: #343a40; 
+    background-color: var(--val-card-bg); 
 }
 
 .game-card-img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
     transition: transform 0.3s, filter 0.3s;
 }
 
@@ -84,7 +250,7 @@ body > .container {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(17, 17, 17, 0.9);
     color: white;
     display: flex;
     flex-direction: column;
@@ -98,7 +264,7 @@ body > .container {
 
 .game-card:hover .game-card-img {
     transform: scale(1.05);
-    filter: blur(3px) brightness(0.6);
+    filter: blur(2px) brightness(0.7);
 }
 
 .game-card:hover .game-info-overlay {
@@ -109,29 +275,51 @@ body > .container {
     color: white;
     border: 1px solid white;
     margin: 0 5px;
-    text-decoration: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 5px 15px;
+    border-radius: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
     transition: background 0.2s;
 }
 
 .overlay-btn:hover {
-    background-color: white;
-    color: black;
+    background-color: var(--val-red);
+    border-color: var(--val-red);
+    color: white;
 }
 
 /* ===========================
-   UTILIDADES Y FOOTER
+   RESPONSIVE (MÓVIL)
+   =========================== */
+@media (max-width: 991px) {
+    .val-link {
+        padding: 15px !important;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .val-link::after {
+        display: none;
+    }
+
+    /* ===========================
+   PÁGINAS LEGALES / TEXTO
    =========================== */
 
-.hover-white:hover {
-    color: white !important;
-    text-decoration: underline;
-    transition: color 0.2s;
+.val-legal-content {
+    line-height: 1.8;
+    font-size: 1rem;
 }
 
-.hover-bg-dark:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    transition: background 0.3s;
+.val-legal-content ul {
+    margin-bottom: 1.5rem;
+}
+
+.val-alert-box {
+    background-color: rgba(255, 70, 85, 0.1);
+    border-left: 4px solid var(--val-red);
+    padding: 1.5rem;
+    border-radius: 4px;
+}
 }

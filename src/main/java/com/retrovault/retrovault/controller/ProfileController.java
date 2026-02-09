@@ -31,7 +31,9 @@ public class ProfileController {
         User user = userService.getUserByUsername(principal.getName());
         
         long gamesCount = gameRepository.countByCreatedBy(user.getUsername());
-        long consolesCount = consoleRepository.countByCreatedBy(user.getUsername());
+        
+        long consolesCount = consoleRepository.countByUser(user);
+        
         model.addAttribute("user", user);
         model.addAttribute("gamesCount", gamesCount);
         model.addAttribute("consolesCount", consolesCount);

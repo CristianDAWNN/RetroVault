@@ -1,62 +1,63 @@
 <nav th:fragment="navbar" xmlns:th="http://www.thymeleaf.org" 
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-     class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4 rounded border-bottom border-secondary">
+     class="navbar navbar-expand-lg val-navbar fixed-top">
      
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold neon-text" th:href="@{/}">👾 RetroVault</a>
+    <div class="container-fluid px-4">
+        
+        <a class="navbar-brand val-brand d-flex align-items-center justify-content-center me-5" th:href="@{/}">
+            <span class="fs-4">RETROVAULT</span> 
+        </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon val-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
             
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
+            <ul class="navbar-nav mx-auto align-items-center">
+                <li class="nav-item"><a class="nav-link val-link" th:href="@{/}">Inicio</a></li>
                 
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/games}">Mis Juegos</a>
+                    <a class="nav-link val-link" th:href="@{/consoles}">Mis Consolas</a>
                 </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/consoles}">Mis Consolas</a>
+                    <a class="nav-link val-link" th:href="@{/games}">Mis Juegos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link val-link" th:href="@{/ranking}">Ranking</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link val-link" th:href="@{/activity}">Actividad</a>
                 </li>
 
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link text-warning fw-bold" th:href="@{/admin/users}">⚙️ Panel Admin</a>
+                    <a class="nav-link val-link text-warning" th:href="@{/admin/users}">Admin</a>
                 </li>
             </ul>
 
             <div class="d-flex align-items-center">
-                <div sec:authorize="!isAuthenticated()">
-                    <a th:href="@{/login}" class="btn btn-neon-login me-2 btn-sm">
-                        Entrar
-                    </a>
-                    <a th:href="@{/register}" class="btn btn-neon-register btn-sm">
-                        Registrarse
-                    </a>
+                
+                <div sec:authorize="!isAuthenticated()" class="d-flex gap-3">
+                    <a th:href="@{/login}" class="val-btn-login">Iniciar Sesión</a>
+                    <a th:href="@{/register}" class="val-btn-register">Registrarse</a>
                 </div>
 
                 <div sec:authorize="isAuthenticated()" th:if="${currentUser != null}" class="d-flex align-items-center gap-3">
                     
-                    <a th:href="@{/profile}" class="text-decoration-none d-flex align-items-center gap-2 py-1 px-2 rounded hover-bg-dark" title="Ir a mi perfil">
+                    <a th:href="@{/profile}" class="val-user-profile d-flex align-items-center gap-2" title="Ir a mi perfil">
+                        <span class="text-white small fw-bold text-uppercase" th:text="${currentUser.username}">USER</span>
                         
                         <img th:if="${currentUser.avatar != null}" 
                              th:src="@{'/uploads/avatars/' + ${currentUser.avatar}}" 
-                             class="rounded-circle border border-secondary"
-                             style="width: 32px; height: 32px; object-fit: cover;">
+                             class="val-avatar rounded-circle border border-dark">
                              
                         <img th:if="${currentUser.avatar == null}" 
                              src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
-                             class="rounded-circle border border-secondary bg-light"
-                             style="width: 32px; height: 32px; object-fit: cover;">
-                        
-                        <span class="text-white small fw-bold" th:text="${currentUser.username}">User</span>
+                             class="val-avatar rounded-circle border border-dark bg-white">
                     </a>
 
-                    <span class="badge bg-danger" sec:authorize="hasRole('ADMIN')">ADMIN</span>
-
-                    <form th:action="@{/logout}" method="post" class="ms-1">
-                        <button type="submit" class="btn btn-outline-light btn-sm py-0" style="font-size: 0.8rem;">Salir</button>
+                    <form th:action="@{/logout}" method="post" class="ms-2">
+                        <button type="submit" class="val-btn-logout"><i class="bi bi-box-arrow-right"></i></button>
                     </form>
                 </div>
             </div>

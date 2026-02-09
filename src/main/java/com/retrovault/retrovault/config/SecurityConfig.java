@@ -18,8 +18,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                // RUTAS PÚBLICAS SIN LOGIN
+                .requestMatchers(
+                    "/", 
+                    "/login", 
+                    "/register", 
+                    "/save",
+                    "/privacy",
+                    "/css/**", 
+                    "/js/**", 
+                    "/images/**", 
+                    "/img/**", 
+                    "/uploads/**"
+                ).permitAll()
+                
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

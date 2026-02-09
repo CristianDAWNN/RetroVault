@@ -1,80 +1,232 @@
 /* src/main/resources/static/css/style.css */
 
-/* ===========================
-   ESTILOS GENERALES Y LAYOUT)
-   =========================== */
-body {
-    background-color: #212529;
-    color: white;
-    min-height: 100vh;
-    
-    display: flex;
-    flex-direction: column;
+/* =========================================
+   VARIABLES Y TEMA (PALETA TACTICAL MATTE)
+   ========================================= */
+:root {
+    --val-black: #111111;       /* Fondo navbar/footer */
+    --val-dark-grey: #292929;   /* Fondo body */
+    --val-card-bg: #343a40;     /* Fondo tarjetas */
+    --val-red: #ff4655;         /* Rojo de acento */
+    --val-white: #ece8e1;       /* Blanco roto (texto) */
 }
 
+/* ===========================
+   ESTILOS GENERALES Y LAYOUT
+   =========================== */
+body {
+    background-color: var(--val-dark-grey);
+    color: var(--val-white);
+    min-height: 100vh;
+    font-family: 'Kanit', 'Segoe UI', sans-serif; 
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding-top: 100px; 
+}
 
 body > .container {
     flex: 1;
 }
 
-/* ===========================
-   TEXTOS NEÓN
-   =========================== */
-.neon-text {
-    color: #fff;
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0dcaf0, 0 0 30px #0dcaf0;
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
-.neon-text-pink {
-    color: #fff;
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #d63384, 0 0 30px #d63384;
+.hover-white:hover {
+    color: white !important;
 }
 
 /* ===========================
-   BOTONES NEÓN
+   NAVBAR
    =========================== */
-.btn-neon-login {
-    border: 1px solid #0dcaf0;
-    color: #0dcaf0;
+.val-navbar {
+    background-color: var(--val-black);
+    height: 80px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    top: 0; 
+}
+
+.val-brand {
+    color: var(--val-red) !important;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     transition: 0.3s;
-    background: transparent;
 }
 
-.btn-neon-login:hover {
-    background-color: #0dcaf0;
-    color: black;
-    box-shadow: 0 0 10px #0dcaf0, 0 0 20px #0dcaf0;
+.val-brand:hover {
+    color: white !important;
 }
 
-.btn-neon-register {
-    background-color: #d63384;
+.val-link {
+    color: var(--val-white) !important;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 28px 15px !important;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.val-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 4px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--val-red);
+    transition: width 0.3s ease;
+}
+
+.val-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.val-link:hover::after {
+    width: 100%;
+}
+
+.val-toggler-icon {
+    filter: invert(1);
+}
+
+/* ===========================
+   BOTONES
+   =========================== */
+.val-btn-login {
+    color: var(--val-white);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.val-btn-login:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.val-btn-register {
+    background-color: var(--val-red);
     color: white;
-    border: 1px solid #d63384;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 4px;
     transition: 0.3s;
+    border: 1px solid var(--val-red);
 }
 
-.btn-neon-register:hover {
-    background-color: #a61e61;
-    border-color: #a61e61;
-    box-shadow: 0 0 10px #d63384, 0 0 20px #d63384;
+.val-btn-register:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
+}
+
+.val-btn-logout {
+    background: none;
+    border: none;
+    color: #6c757d;
+    transition: 0.2s;
+    padding: 0;
+}
+
+.val-btn-logout:hover {
+    color: var(--val-red);
 }
 
 /* ===========================
-   TARJETAS DE JUEGOS
+   PERFIL & FOOTER
+   =========================== */
+.val-user-profile {
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.val-user-profile:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.val-avatar {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--val-dark-grey);
+}
+
+.val-footer {
+    background-color: var(--val-black);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+}
+
+.val-footer-heading {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+.val-footer-link {
+    color: var(--val-white);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.8rem;
+    transition: 0.2s ease;
+}
+
+.val-footer-link:hover {
+    color: var(--val-red);
+    transform: translateX(5px);
+}
+
+.val-footer .val-btn-register {
+    border-radius: 4px;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.val-footer i {
+    transition: color 0.3s;
+}
+.val-footer i:hover {
+    color: var(--val-white) !important;
+}
+
+/* ===========================
+   CARDS DE JUEGOS
    =========================== */
 .game-card {
     height: 350px;
     overflow: hidden;
     position: relative;
     border: none;
-    border-radius: 10px;
+    border-radius: 4px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    background-color: #343a40; 
+    background-color: var(--val-card-bg); 
 }
 
 .game-card-img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
     transition: transform 0.3s, filter 0.3s;
 }
 
@@ -84,7 +236,7 @@ body > .container {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(17, 17, 17, 0.9);
     color: white;
     display: flex;
     flex-direction: column;
@@ -98,7 +250,7 @@ body > .container {
 
 .game-card:hover .game-card-img {
     transform: scale(1.05);
-    filter: blur(3px) brightness(0.6);
+    filter: blur(2px) brightness(0.7);
 }
 
 .game-card:hover .game-info-overlay {
@@ -109,29 +261,229 @@ body > .container {
     color: white;
     border: 1px solid white;
     margin: 0 5px;
-    text-decoration: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 5px 15px;
+    border-radius: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
     transition: background 0.2s;
 }
 
 .overlay-btn:hover {
-    background-color: white;
-    color: black;
+    background-color: var(--val-red);
+    border-color: var(--val-red);
+    color: white;
 }
 
 /* ===========================
-   UTILIDADES Y FOOTER
+   RANKING
    =========================== */
-
-.hover-white:hover {
-    color: white !important;
-    text-decoration: underline;
-    transition: color 0.2s;
+.val-hero {
+    min-height: 70vh;
+    
+    background-image: 
+        linear-gradient(rgba(20, 20, 20, 0.5), rgba(20, 20, 20, 0.8)), 
+        url('/img/hero-bg.jpg'); 
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    position: relative;
+    overflow: hidden;
+    margin-top: -30px;
+    padding-bottom: 50px;
+    
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.hover-bg-dark:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    transition: background 0.3s;
+.val-hero-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    font-family: 'Kanit', sans-serif;
+    letter-spacing: -2px;
+    color: var(--val-white);
+    line-height: 1;
+}
+
+.val-stat-icon {
+    font-size: 1.5rem;
+    color: var(--val-white);
+}
+
+/* --- TARJETAS PODIO --- */
+.val-podium-container {
+    min-height: 350px;
+}
+
+.val-rank-card {
+    background-color: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: transform 0.3s;
+    width: 160px;
+}
+
+.val-rank-card:hover {
+    background-color: rgba(50, 50, 50, 0.9);
+    border-color: var(--val-white);
+}
+
+.rank-content {
+    padding: 25px 15px;
+}
+
+.rank-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #444;
+    color: #ccc;
+    padding: 4px 12px;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+}
+
+.rank-avatar {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--val-dark-grey);
+}
+
+.rank-avatar.large {
+    width: 100px;
+    height: 100px;
+    border: 4px solid var(--val-red);
+}
+
+/* RANK */
+.rank-1 {
+    transform: scale(1.1) translateY(-30px);
+    z-index: 10;
+    border-top: 4px solid var(--val-red);
+}
+
+.rank-2 {
+    transform: translateY(10px);
+    z-index: 5;
+    opacity: 0.9;
+}
+
+.rank-3 {
+    transform: scale(0.9) translateY(40px);
+    z-index: 5;
+    opacity: 0.8;
+}
+
+/* ===========================
+   PÁGINAS LEGALES
+   =========================== */
+.val-legal-content {
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+.val-legal-content ul {
+    margin-bottom: 1.5rem;
+}
+
+.val-alert-box {
+    background-color: rgba(255, 70, 85, 0.1);
+    border-left: 4px solid var(--val-red);
+    padding: 1.5rem;
+    border-radius: 4px;
+}
+
+/* ===========================
+    ESTILOS DASHBOARD (STATS & TOP GAMES)
+   =========================== */
+.val-dashboard-card {
+    background-color: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Tabla oscura personalizada */
+.val-table {
+    background-color: transparent;
+}
+.val-table thead th {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #6c757d;
+}
+.val-table tbody td {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--val-white);
+    padding: 12px 5px;
+}
+.val-table tr:last-child td {
+    border-bottom: none;
+}
+.text-val-red {
+    color: var(--val-red) !important;
+}
+
+/* Filas de Juegos Top */
+.val-game-row {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+.val-game-row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+.bg-val-red {
+    background-color: var(--val-red) !important;
+}
+
+/* ===========================
+   RESPONSIVE (MÓVIL)
+   =========================== */
+@media (max-width: 991px) {
+    .val-link {
+        padding: 15px !important;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .val-link::after {
+        display: none;
+    }
+
+    .val-hero-title {
+        font-size: 3rem;
+        text-align: center;
+    }
+    
+    .val-podium-container {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 30px;
+    }
+    
+    .val-rank-card {
+        margin: 15px 0 !important;
+        transform: none !important;
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .rank-1 { order: 1; }
+    .rank-2 { order: 2; }
+    .rank-3 { order: 3; }
 }

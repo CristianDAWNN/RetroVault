@@ -6,8 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ConsoleRepository extends JpaRepository<Console, Long> {
+    
     List<Console> findByUser(User user);
     boolean existsByNameAndUser(String name, User user);
-    List<Console> findByCreatedBy(String username);
-    long countByCreatedBy(String username);
+    
+    long countByUser(User user); 
 }

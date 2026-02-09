@@ -26,6 +26,7 @@ public class SecurityConfig {
                     "/save",
                     "/privacy",
                     "/css/**", 
+                    "/ranking",
                     "/js/**", 
                     "/images/**", 
                     "/img/**", 

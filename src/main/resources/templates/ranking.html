@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: header}"></head>
+<body>
+
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        
+        <div class="mb-5 text-center">
+            <h1 class="fw-bold text-white display-5" style="font-family: 'Kanit', sans-serif;">RANKINGS</h1>
+            <p class="text-val-red fw-bold text-uppercase" style="letter-spacing: 2px;">Estadísticas de la base de datos global</p>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap">
+            <button class="btn val-tab-btn active" data-target="tab-genres">
+                <i class="bi bi-pie-chart-fill me-2"></i> GÉNEROS
+            </button>
+            <button class="btn val-tab-btn" data-target="tab-players">
+                <i class="bi bi-people-fill me-2"></i> USUARIOS
+            </button>
+            <button class="btn val-tab-btn" data-target="tab-consoles">
+                <i class="bi bi-controller me-2"></i> CONSOLAS
+            </button>
+        </div>
+
+        <div id="tab-genres" class="val-tab-content">
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="val-dashboard-card text-center">
+                        <h5 class="text-white mb-4 fw-bold">DISTRIBUCIÓN</h5>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="genreChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="val-dashboard-card">
+                        <h4 class="text-white fw-bold mb-4">TOP GÉNEROS</h4>
+                        <table class="table val-table align-middle">
+                            <thead>
+                                <tr class="text-val-red small text-uppercase fw-bold">
+                                    <th>#</th>
+                                    <th>GÉNERO</th>
+                                    <th class="text-end">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stat, iter : ${topGenres}">
+                                    <td class="text-val-red fw-bold" th:text="${iter.count}">1</td>
+                                    <td><span class="fw-bold text-white" th:text="${stat[0]}">RPG</span></td>
+                                    <td class="text-end fw-bold fs-5 text-white" th:text="${stat[1]}">120</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-players" class="val-tab-content" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="val-dashboard-card">
+                        <div class="d-flex flex-column gap-3">
+                            <div th:each="user, iter : ${rankedUsers}" class="val-game-row d-flex align-items-center p-3 rounded">
+                                <div class="me-4 text-val-red fs-4 fw-bold text-center" style="width: 30px;" th:text="${iter.count}">1</div>
+                                <img th:src="${user.avatar != null} ? @{'/uploads/avatars/' + ${user.avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rounded-circle border border-danger" style="width: 60px; height: 60px; object-fit: cover;">
+                                <div class="ms-3 flex-grow-1">
+                                    <h5 class="mb-0 text-white fw-bold" th:text="${user.username}">User</h5>
+                                    <small class="text-val-red fw-bold text-uppercase" style="font-size: 0.7rem;">USUARIO</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="d-block text-val-red small fw-bold text-uppercase mb-1">NIVEL</span>
+                                    <span class="badge bg-val-red fs-5 px-3 py-2" th:text="${user.level}">50</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-consoles" class="val-tab-content" style="display: none;">
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="val-dashboard-card text-center">
+                        <h5 class="text-white mb-4 fw-bold">CUOTA DE MERCADO</h5>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="consoleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="val-dashboard-card">
+                        <h4 class="text-white fw-bold mb-4">SISTEMAS TOP</h4>
+                        <table class="table val-table align-middle">
+                            <thead>
+                                <tr class="text-val-red small text-uppercase fw-bold">
+                                    <th>#</th>
+                                    <th>SISTEMA</th>
+                                    <th class="text-end">JUEGOS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item, iter : ${rankedConsoles}">
+                                    <td class="text-val-red fw-bold" th:text="${iter.count}">1</td>
+                                    <td>
+                                        <span class="fw-bold text-white" th:text="${item[0]}">NES</span>
+                                        <small class="text-secondary ms-2" th:text="${item[1]}">Nintendo</small>
+                                    </td>
+                                    <td class="text-end fw-bold fs-5 text-white" th:text="${item[2]}">50</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.retroData = {
+            genres: {
+                labels: /*[[${genreLabels}]]*/ [], 
+                data: /*[[${genreCounts}]]*/ []
+            },
+            consoles: {
+                labels: /*[[${consoleLabels}]]*/ [],
+                data: /*[[${consoleCounts}]]*/ []
+            }
+        };
+        /*]]>*/
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script th:src="@{/js/scripts.js}"></script>
+    
+</body>
+</html>

@@ -1,7 +1,7 @@
 /* src/main/resources/static/css/style.css */
 
 /* =========================================
-   VARIABLES Y TEMA (PALETA TACTICAL MATTE)
+   VARIABLES Y TEMA
    ========================================= */
 :root {
     --val-black: #111111;       /* Fondo navbar/footer */
@@ -489,20 +489,16 @@ a {
    =========================== */
 .val-tab-btn {
     background-color: transparent;
-    
     border: 1px solid rgba(255, 255, 255, 0.5) !important; 
     color: white !important; 
-    
     min-width: 180px;
     justify-content: center;
-    
     border-radius: 50px; 
     padding: 12px 20px;
     font-weight: 700; 
     text-transform: uppercase;
     letter-spacing: 1.5px;
     transition: all 0.3s ease;
-    
     display: flex;
     align-items: center;
     gap: 10px;
@@ -541,7 +537,7 @@ a {
 }
 
 /* ===========================
-   FORMULARIOS Y INPUTS (MODO TÁCTICO)
+   FORMULARIOS Y INPUTS
    =========================== */
 
 .form-control, 
@@ -597,4 +593,8 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
+}
+
+.border-dashed {
+    border-style: dashed !important;
 }

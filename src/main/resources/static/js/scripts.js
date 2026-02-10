@@ -1,6 +1,11 @@
-document.addEventListener("DOMContentLoaded", function() {
+/* src/main/resources/static/js/scripts.js */
 
-    //  BUSCADOR DE JUEGOS
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("RetroVault System Initialized 🚀");
+
+    // ===========================
+    // BUSCADOR DE JUEGOS (INTELIGENTE)
+    // ===========================
     const searchInput = document.getElementById('searchInput');
     
     if (searchInput) {
@@ -9,7 +14,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const games = document.querySelectorAll('.game-item');
 
             games.forEach(game => {
-                const fullText = game.textContent.toLowerCase(); //Lógica para buscar por nombre, consola o genero
+                // Busca en todo el texto de la tarjeta (Título, Consola, Género)
+                const fullText = game.textContent.toLowerCase();
 
                 if (fullText.includes(term)) {
                     game.style.display = 'block';
@@ -20,16 +26,25 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // ===========================
     //  LÓGICA DE PESTAÑAS
-    const tabButtons = document.querySelectorAll('.val-tab-btn');
+    // ===========================
+    const tabButtons = document.querySelectorAll('.val-tab-btn[data-target]');
     
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.val-tab-btn').forEach(b => b.classList.remove('active'));
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.val-tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Ocultar todos los contenidos relacionados
+            const targetId = btn.getAttribute('data-target');
+            // Asumimos que los contenidos están al mismo nivel
             document.querySelectorAll('.val-tab-content').forEach(c => c.style.display = 'none');
             
+            // Activar botón actual
             btn.classList.add('active');
-            const targetId = btn.getAttribute('data-target');
+            
+            // Mostrar contenido
             const targetContent = document.getElementById(targetId);
             if(targetContent) {
                 targetContent.style.display = 'block';
@@ -39,7 +54,36 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    //  GRÁFICOS (CHART.JS)
+    // ===========================
+    //  VISTAS ESPECÍFICas DE JUEGOS (MANUAL / IA)
+    // ===========================
+    const btnManual = document.getElementById('btn-mode-manual');
+    const btnAi = document.getElementById('btn-mode-ai');
+    const sectionManual = document.getElementById('section-manual');
+    const sectionAi = document.getElementById('section-ai');
+
+    if (btnManual && btnAi && sectionManual && sectionAi) {
+        
+        btnManual.addEventListener('click', () => {
+            btnManual.classList.add('active');
+            btnAi.classList.remove('active');
+            
+            sectionManual.style.display = 'block';
+            sectionAi.style.display = 'none';
+        });
+
+        btnAi.addEventListener('click', () => {
+            btnAi.classList.add('active');
+            btnManual.classList.remove('active');
+            
+            sectionAi.style.display = 'block';
+            sectionManual.style.display = 'none';
+        });
+    }
+
+    // ===========================
+    // GRÁFICOS (CHART.JS)
+    // ===========================
     if (window.retroData && typeof Chart !== 'undefined') {
         
         const commonOptions = {

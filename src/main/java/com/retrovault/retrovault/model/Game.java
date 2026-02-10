@@ -21,7 +21,6 @@ public class Game {
     @NotBlank(message = "El título es obligatorio") 
     private String title;
 
-    // --- NUEVO CAMPO GÉNERO ---
     @Column(nullable = false)
     @NotBlank(message = "El género es obligatorio")
     private String genre;
@@ -29,8 +28,9 @@ public class Game {
     @Column(name = "launch_date")
     private LocalDate launchDate; 
 
-    private String status;
+    private String status; // Pendiente, Jugando, Completado
 
+    // Nota
     @Min(value = 0, message = "La nota mínima es 0")
     @Max(value = 10, message = "La nota máxima es 10")
     private Integer rate;
@@ -38,19 +38,36 @@ public class Game {
     @Column(name = "cover_img") 
     private String coverImg;
 
+    // --- AUDITORÍA DE FECHAS ---
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @Column(name = "created_by")
     private String createdBy;
+
+    // --- RELACIONES ---
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "console_id")
     @NotNull(message = "Debes elegir una plataforma")
     private Console console;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

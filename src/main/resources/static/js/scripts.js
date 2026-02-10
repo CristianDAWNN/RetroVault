@@ -1,7 +1,26 @@
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("RetroVault System Initialized 🚀");
 
-    //LÓGICA DE PESTAÑAS
+    //  BUSCADOR DE JUEGOS
+    const searchInput = document.getElementById('searchInput');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const term = this.value.toLowerCase().trim();
+            const games = document.querySelectorAll('.game-item');
+
+            games.forEach(game => {
+                const fullText = game.textContent.toLowerCase(); //Lógica para buscar por nombre, consola o genero
+
+                if (fullText.includes(term)) {
+                    game.style.display = 'block';
+                } else {
+                    game.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    //  LÓGICA DE PESTAÑAS
     const tabButtons = document.querySelectorAll('.val-tab-btn');
     
     tabButtons.forEach(btn => {
@@ -20,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    //LÓGICA DE GRÁFICOS (CHART.JS)
+    //  GRÁFICOS (CHART.JS)
     if (window.retroData && typeof Chart !== 'undefined') {
         
         const commonOptions = {

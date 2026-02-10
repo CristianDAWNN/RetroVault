@@ -5,85 +5,97 @@
 
 <body>
 
-    <div class="container">
-        
-        <div th:replace="~{fragments/nav :: navbar}"></div>
+    <div th:replace="~{fragments/nav :: navbar}"></div>
 
-        <div class="card shadow mt-4">
-            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-                <h3 class="mb-0 h5">⚙️ Administración de Usuarios</h3>
-                <span class="badge bg-white text-danger">Acceso Restringido</span>
+    <div class="container mt-5 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-white text-uppercase mb-0" style="font-family: 'Kanit', sans-serif; letter-spacing: 1px;">
+                    <i class="bi bi-shield-lock-fill me-2 text-val-red"></i> GESTIÓN DE USUARIOS
+                </h2>
+                <p class="text-secondary small mb-0 mt-1">
+                    <i class="bi bi-exclamation-triangle me-1 text-warning"></i> ACCESO CLASIFICADO
+                </p>
             </div>
             
-            <div class="card-body">
-                
-                <div th:if="${users.empty}" class="alert alert-info">
-                    No hay usuarios registrados todavía.
-                </div>
-
-                <div class="table-responsive" th:if="${!users.empty}">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Usuario</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                                <th>Fecha Registro</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="u : ${users}">
-                                <td th:text="${u.id}">1</td>
-                                
-                                <td>
-                                    <span class="fw-bold" th:text="${u.username}">Usuario</span>
-                                    <span th:if="${#authentication.name == u.username}" 
-                                          class="badge bg-success ms-1">Tú</span>
-                                </td>
-                                
-                                <td th:text="${u.email}">correo@ejemplo.com</td>
-                                
-                                <td>
-                                    <span class="badge rounded-pill" 
-                                          th:classappend="${u.role == 'ADMIN' ? 'bg-danger' : 'bg-primary'}"
-                                          th:text="${u.role}">
-                                        USER
-                                    </span>
-                                </td>
-
-                                <td th:text="${#temporals.format(u.createdAt, 'dd/MM/yyyy HH:mm')}">
-                                    Fecha
-                                </td>
-
-                                <td>
-                                    <a th:href="@{/admin/users/edit/{id}(id=${u.id})}" 
-                                       class="btn btn-sm btn-outline-warning" 
-                                       title="Editar">
-                                        ✏️
-                                    </a>
-
-                                    <a th:if="${#authentication.name != u.username}"
-                                       th:href="@{/admin/users/delete/{id}(id=${u.id})}" 
-                                       class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('¿Seguro que quieres eliminar a este usuario? Se borrarán todos sus juegos.');"
-                                       title="Borrar">
-                                        🗑️
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <a th:href="@{/}" class="btn btn-outline-secondary text-uppercase fw-bold text-white-50" style="letter-spacing: 1px;">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+            </a>
         </div>
-        
-        <div class="mt-3 text-end">
-            <a th:href="@{/}" class="btn btn-secondary">Volver al Inicio</a>
+
+        <div class="val-dashboard-card">
+            
+            <div th:if="${users.empty}" class="text-center py-5">
+                <i class="bi bi-people text-secondary display-1 mb-3 d-block"></i>
+                <h5 class="text-white fw-bold text-uppercase">BASE DE DATOS DE AGENTES VACÍA</h5>
+            </div>
+
+            <div class="table-responsive" th:if="${!users.empty}">
+                <table class="table val-table align-middle mb-0">
+                    <thead>
+                        <tr class="text-val-red small text-uppercase fw-bold">
+                            <th>ID</th>
+                            <th>IDENTIFICACIÓN</th>
+                            <th>COMUNICACIÓN (EMAIL)</th>
+                            <th>RANGO / ROL</th>
+                            <th>ALTA</th>
+                            <th class="text-end">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}" class="val-game-row">
+                            
+                            <td class="text-secondary small font-monospace" th:text="${u.id}">1</td>
+                            
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold text-white" th:text="${u.username}">Usuario</span>
+                                    
+                                    <span th:if="${#authentication.name == u.username}" 
+                                          class="badge bg-val-red text-white border border-danger small" 
+                                          style="font-size: 0.65rem;">ACTUAL</span>
+                                </div>
+                            </td>
+                            
+                            <td class="text-secondary small" th:text="${u.email}">correo@ejemplo.com</td>
+                            
+                            <td>
+                                <span class="badge border text-uppercase" 
+                                      th:classappend="${u.role == 'ADMIN' ? 'bg-black text-danger border-danger' : 'bg-black text-info border-info'}"
+                                      style="letter-spacing: 1px;">
+                                    <i th:class="${u.role == 'ADMIN' ? 'bi bi-shield-fill me-1' : 'bi bi-person-fill me-1'}"></i>
+                                    <span th:text="${u.role}">USER</span>
+                                </span>
+                            </td>
+
+                            <td class="text-secondary small font-monospace" th:text="${#temporals.format(u.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                Fecha
+                            </td>
+
+                            <td class="text-end">
+                                <a th:href="@{/admin/users/edit/{id}(id=${u.id})}" 
+                                   class="btn btn-sm btn-outline-secondary me-1" 
+                                   title="Editar Credenciales">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+
+                                <a th:if="${#authentication.name != u.username}"
+                                   th:href="@{/admin/users/delete/{id}(id=${u.id})}" 
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('ATENCIÓN: Se eliminará al agente y todos sus registros asociados. ¿Proceder?');"
+                                   title="Eliminar Agente">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
+    <div th:replace="~{fragments/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

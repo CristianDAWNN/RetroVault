@@ -2,6 +2,7 @@ package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.Game;
 import com.retrovault.retrovault.model.User;
+import com.retrovault.retrovault.repository.ConsoleRepository; // ¡Importante!
 import com.retrovault.retrovault.repository.GameRepository;
 import com.retrovault.retrovault.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,16 @@ public class HomeController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ConsoleRepository consoleRepository;
+
     @GetMapping("/")
     public String home(Model model) {
         // Totales
         long totalGames = gameRepository.count();
         long totalUsers = userRepository.count();
 
-        // Ranking Usuarios (XP)
+        // Ranking Usuarios
         List<User> topPlayers = userRepository.findAll(Sort.by(Sort.Direction.DESC, "level", "experience"))
                                               .stream()
                                               .limit(3)
@@ -64,17 +68,22 @@ public class HomeController {
     @GetMapping("/ranking")
     public String showRanking(Model model) {
         
-        //OBTENER DATOS CRUDOS
+        // OBTENER DATOS
+        
+        // Top Géneros
         List<Object[]> topGenres = gameRepository.findTopGenres(PageRequest.of(0, 10));
         
+        // Top Usuarios
         List<User> rankedUsers = userRepository.findAll(
             PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "level", "experience"))
         ).getContent();
         
-        List<Object[]> rankedConsoles = gameRepository.findTopConsoles(PageRequest.of(0, 10));
+        // Top Consolas
+        List<Object[]> rankedConsoles = consoleRepository.findMostPopularConsoles(PageRequest.of(0, 10));
 
-        //PREPARAR LISTAS SIMPLES PARA EL JAVASCRIPT
+        // PREPARAR LISTAS PARA JAVASCRIPT
         
+        // Generos [0]Nombre [1]Cantidad
         List<String> genreLabels = topGenres.stream()
             .map(g -> g[0].toString())
             .collect(Collectors.toList());
@@ -83,6 +92,7 @@ public class HomeController {
             .map(g -> (Long) g[1])
             .collect(Collectors.toList());
 
+        // Consolas [0]Nombre [2]Total
         List<String> consoleLabels = rankedConsoles.stream()
             .map(c -> (String) c[0]) 
             .collect(Collectors.toList());
@@ -99,7 +109,7 @@ public class HomeController {
         model.addAttribute("rankedUsers", rankedUsers);
         model.addAttribute("rankedConsoles", rankedConsoles);
         
-        // Listas limpias para los gráficos
+        // Listas para los gráficos
         model.addAttribute("genreLabels", genreLabels);
         model.addAttribute("genreCounts", genreCounts);
         model.addAttribute("consoleLabels", consoleLabels);

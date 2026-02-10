@@ -5,63 +5,62 @@
 
     <div th:replace="~{fragments/nav :: navbar}"></div>
 
-    <div class="container mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 75vh;">
+        <div class="col-md-5 col-lg-4">
+            
+            <div class="val-dashboard-card">
                 
-                <div class="card bg-dark text-white border-secondary shadow-lg">
+                <div class="text-center mb-4 border-bottom border-secondary pb-3">
+                    <h2 class="fw-bold text-white text-uppercase" style="font-family: 'Kanit', sans-serif; letter-spacing: 2px;">
+                        CREAR CUENTA
+                    </h2>
+                    <p class="text-secondary small mb-0">Únete a la base de datos de RetroVault.</p>
+                </div>
+
+                <form th:action="@{/register}" th:object="${user}" method="post">
                     
-                    <div class="card-header border-0 pt-4 pb-0 text-center bg-transparent">
-                        <h2 class="fw-bold" style="font-family: 'Kanit', sans-serif;">CREAR CUENTA</h2>
-                        <p class="text-white-50 small">Únete a la base de datos de RetroVault</p>
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-bold text-uppercase mb-1">Nombre de Agente</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" th:field="*{username}" class="form-control" placeholder="Tu Nickname" required />
+                        </div>
+                        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger small mt-1">Error</div>
                     </div>
 
-                    <div class="card-body p-4">
-                        
-                        <form th:action="@{/register}" th:object="${user}" method="post">
-                            
-                            <div class="mb-3">
-                                <label class="form-label text-secondary small fw-bold">NOMBRE DE AGENTE</label>
-                                <input type="text" th:field="*{username}" 
-                                       class="form-control bg-black text-white border-secondary" 
-                                       th:errorclass="is-invalid" 
-                                       placeholder="Tu Nickname" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text-secondary small fw-bold">CORREO ELECTRÓNICO</label>
-                                <input type="email" th:field="*{email}" 
-                                       class="form-control bg-black text-white border-secondary" 
-                                       th:errorclass="is-invalid" 
-                                       placeholder="correo@ejemplo.com" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label text-secondary small fw-bold">CONTRASEÑA</label>
-                                <input type="password" th:field="*{password}" 
-                                       class="form-control bg-black text-white border-secondary" 
-                                       th:errorclass="is-invalid" 
-                                       placeholder="••••••••" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn val-btn-register py-2 fw-bold shadow-sm">
-                                    CONFIRMAR REGISTRO
-                                </button>
-                            </div>
-                            
-                            <div class="mt-4 text-center border-top border-secondary pt-3">
-                                <small class="text-white-50">
-                                    ¿Ya tienes cuenta? 
-                                    <a th:href="@{/login}" class="text-white fw-bold text-decoration-none hover-white">Entra aquí</a>
-                                </small>
-                            </div>
-
-                        </form>
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-bold text-uppercase mb-1">Correo Electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-envelope-fill"></i></span>
+                            <input type="email" th:field="*{email}" class="form-control" placeholder="correo@ejemplo.com" required />
+                        </div>
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger small mt-1">Error</div>
                     </div>
+
+                    <div class="mb-4">
+                        <label class="text-secondary small fw-bold text-uppercase mb-1">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" th:field="*{password}" class="form-control" placeholder="••••••••" required />
+                        </div>
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger small mt-1">Error</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn val-btn-register py-2 text-uppercase" style="letter-spacing: 1px;">
+                            Confirmar Registro
+                        </button>
+                    </div>
+                    
+                </form>
+
+                <div class="mt-4 text-center pt-3 border-top border-secondary border-opacity-25">
+                    <small class="text-secondary">
+                        ¿Ya tienes cuenta? 
+                        <a th:href="@{/login}" class="text-val-red fw-bold text-decoration-none text-uppercase">
+                            Entra aquí
+                        </a>
+                    </small>
                 </div>
 
             </div>
@@ -69,7 +68,6 @@
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

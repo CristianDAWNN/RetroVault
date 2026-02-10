@@ -1,49 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: header}"></head>
-<body class="bg-light">
+<body>
 
     <div th:replace="~{fragments/nav :: navbar}"></div>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-dark text-white text-center">
-                        <h3>🔐 Iniciar Sesión</h3>
-                    </div>
-                    <div class="card-body p-4">
-                        
-                        <div th:if="${param.error}" class="alert alert-danger text-center">
-                            Usuario o contraseña incorrectos ❌
-                        </div>
-
-                        <div th:if="${param.logout}" class="alert alert-success text-center">
-                            Has cerrado sesión correctamente 👋
-                        </div>
-
-                        <form th:action="@{/login}" method="post">
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Usuario</label>
-                                <input type="text" name="username" class="form-control" placeholder="Ej: Gamer1" required autofocus />
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Contraseña</label>
-                                <input type="password" name="password" class="form-control" placeholder="******" required />
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg">Entrar 🎮</button>
-                            </div>
-                            
-                        </form>
-                    </div>
-                    <div class="card-footer text-center">
-                        <small>¿No tienes cuenta? <a th:href="@{/register}">Regístrate aquí</a></small>
-                    </div>
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 75vh;">
+        <div class="col-md-5 col-lg-4">
+            
+            <div class="val-dashboard-card">
+                
+                <div class="text-center mb-4 border-bottom border-secondary pb-3">
+                    <h2 class="fw-bold text-white text-uppercase" style="font-family: 'Kanit', sans-serif; letter-spacing: 2px;">
+                        ACCESO
+                    </h2>
+                    <p class="text-secondary small mb-0">IDENTIFÍCATE, GAMER.</p>
                 </div>
+                
+                <div th:if="${param.error}" class="alert alert-danger bg-danger text-white border-0 d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>Credenciales inválidas. Inténtalo de nuevo.</span>
+                </div>
+
+                <div th:if="${param.logout}" class="alert alert-success bg-success text-white border-0 d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Sesión finalizada correctamente.</span>
+                </div>
+
+                <form th:action="@{/login}" method="post">
+                    
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-bold text-uppercase mb-1">Nombre de Usuario</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="Tu Nickname" required autofocus />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-secondary small fw-bold text-uppercase mb-1">Clave de Acceso</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn val-btn-register py-2 text-uppercase" style="letter-spacing: 1px;">
+                            Iniciar Misión
+                        </button>
+                    </div>
+                    
+                </form>
+
+                <div class="mt-4 text-center pt-3 border-top border-secondary border-opacity-25">
+                    <small class="text-secondary">
+                        ¿Aún no eres miembro? 
+                        <a th:href="@{/register}" class="text-val-red fw-bold text-decoration-none text-uppercase">
+                            Reclutamiento
+                        </a>
+                    </small>
+                </div>
+
             </div>
         </div>
     </div>

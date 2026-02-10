@@ -5,86 +5,96 @@
 
 <body>
 
-    <div class="container">
-        
-        <div th:replace="~{fragments/nav :: navbar}"></div>
+    <div th:replace="~{fragments/nav :: navbar}"></div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <h1 class="display-6">🎮 Mi Colección</h1>
-            <a th:href="@{/games/new}" class="btn btn-success shadow">+ Añadir Juego</a>
+    <div class="container mt-5 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-white text-uppercase mb-0" style="font-family: 'Kanit', sans-serif; letter-spacing: 1px;">
+                <i class="bi bi-collection-play-fill me-2 text-val-red"></i> MI COLECCIÓN
+            </h2>
+            <a th:href="@{/games/new}" class="btn val-btn-register text-uppercase fw-bold" style="letter-spacing: 1px;">
+                <i class="bi bi-plus-lg me-1"></i> AÑADIR JUEGO
+            </a>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6 mx-auto">
-                <div class="input-group shadow-sm">
-                    <span class="input-group-text bg-white border-end-0">🔍</span>
-                    <input type="text" id="searchInput" class="form-control border-start-0" 
-                           placeholder="Escribe para filtrar (ej: Mario, Zelda)..." 
-                           autocomplete="off">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" class="form-control text-uppercase" 
+                           placeholder="BUSCAR EN LA BASE DE DATOS..." 
+                           autocomplete="off" 
+                           style="background-color: #0a0a0a; border-color: #444; color: white;">
                 </div>
             </div>
         </div>
 
         <div th:if="${games.empty}" class="text-center py-5">
-            <h3 class="text-muted">📭 Tu colección está vacía</h3>
-            <p>¡Empieza a añadir tus joyas retro!</p>
+            <i class="bi bi-inbox-fill text-secondary display-1 mb-3 d-block"></i>
+            <h5 class="text-white fw-bold text-uppercase">TU COLECCIÓN ESTÁ VACÍA</h5>
+            <p class="text-secondary small">Empieza a catalogar tus joyas retro.</p>
         </div>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="gamesContainer">
             
             <div class="col game-item" th:each="g : ${games}">
-                <div class="card game-card">
+                <div class="game-card">
                     
                     <img th:if="${g.coverImg != null}" 
                          th:src="@{'/uploads/' + ${g.coverImg}}" 
                          class="game-card-img" 
                          alt="Portada">
                     
-                    <div th:unless="${g.coverImg != null}" class="game-card-img bg-dark d-flex align-items-center justify-content-center">
-                        <span style="font-size: 4em;">💿</span>
+                    <div th:unless="${g.coverImg != null}" class="game-card-img bg-dark d-flex align-items-center justify-content-center h-100">
+                        <i class="bi bi-disc text-secondary" style="font-size: 4rem;"></i>
                     </div>
 
                     <div class="game-info-overlay">
                         
-                        <h4 class="card-title text-truncate w-100 mb-1" th:text="${g.title}">Título</h4>
+                        <h5 class="card-title text-truncate w-100 mb-1 fw-bold text-uppercase" th:text="${g.title}">TÍTULO</h5>
                         
-                        <span class="badge bg-info text-dark mb-2" th:text="${g.genre}">Género</span>
+                        <span class="badge bg-val-red mb-2 text-uppercase" th:text="${g.genre}">GÉNERO</span>
 
-                        <p class="mb-2 small">
-                            <span th:text="${g.console != null ? g.console.name : 'Sin Consola'}">SNES</span>
+                        <p class="mb-3 small text-white-50">
+                            <i class="bi bi-hdd-fill me-1"></i> <span th:text="${g.console != null ? g.console.name : 'N/A'}">SNES</span>
                             <span th:if="${g.launchDate != null}" class="ms-1">
                                 | <span th:text="${#temporals.format(g.launchDate, 'yyyy')}">1990</span>
                             </span>
                         </p>
 
                         <div class="d-flex gap-2 mb-4 justify-content-center align-items-center w-100">
-                            <span class="badge rounded-pill" 
-                                  th:classappend="${g.status == 'Completado' ? 'bg-success' : (g.status == 'Jugando' ? 'bg-primary' : 'bg-secondary')}"
+                            <span class="badge border border-secondary bg-black text-uppercase" 
+                                  th:classappend="${g.status == 'Completado' ? 'text-success border-success' : (g.status == 'Jugando' ? 'text-primary border-primary' : 'text-secondary')}"
                                   th:text="${g.status}">
-                                Pendiente
+                                PENDIENTE
                             </span>
-                            <span class="fw-bold text-warning">
-                                ⭐ <span th:text="${g.rate}">10</span>
+                            <span class="fw-bold text-warning d-flex align-items-center gap-1">
+                                <i class="bi bi-star-fill small"></i> <span th:text="${g.rate}">10</span>
                             </span>
                         </div>
 
-                        <div>
-                            <a th:href="@{/games/edit/{id}(id=${g.id})}" class="btn btn-sm overlay-btn">
-                                ✏️ Editar
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/games/edit/{id}(id=${g.id})}" class="btn btn-sm btn-outline-light rounded-circle" title="Editar">
+                                <i class="bi bi-pencil-fill"></i>
                             </a>
-                            <a th:href="@{/games/delete/{id}(id=${g.id})}" class="btn btn-sm btn-danger" 
-                               onclick="return confirm('¿Borrar este juego?');">
-                                🗑️ Borrar
+                            <a th:href="@{/games/delete/{id}(id=${g.id})}" class="btn btn-sm btn-outline-danger rounded-circle" 
+                               title="Borrar"
+                               onclick="return confirm('¿Eliminar este juego de la base de datos?');">
+                                <i class="bi bi-trash-fill"></i>
                             </a>
                         </div>
 
                     </div> 
-                </div>
+                </div> 
             </div>
         </div>
     </div>
     
     <div th:replace="~{fragments/footer :: footer}"></div>
+    
     <script th:src="@{/js/scripts.js}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

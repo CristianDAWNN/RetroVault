@@ -4,120 +4,129 @@
 <head th:replace="~{fragments/head :: header}"></head>
 
 <body>
-    <div class="container">
-        
-        <div th:replace="~{fragments/nav :: navbar}"></div>
+    
+    <div th:replace="~{fragments/nav :: navbar}"></div>
 
+    <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="h4 mb-0" th:if="${game.id == null}">Nuevo Juego</h2>
-                        <h2 class="h4 mb-0" th:if="${game.id != null}">Editar Juego</h2>
+            <div class="col-md-8 col-lg-7"> <div class="val-dashboard-card">
+                    
+                    <div class="text-center mb-4 border-bottom border-secondary pb-3">
+                        <h2 class="fw-bold text-white text-uppercase" style="font-family: 'Kanit', sans-serif; letter-spacing: 2px;">
+                            <i class="bi bi-disc-fill me-2 text-val-red"></i>
+                            <span th:text="${game.id == null ? 'NUEVO JUEGO' : 'EDITAR JUEGO'}">TÍTULO</span>
+                        </h2>
+                        <p class="text-secondary small mb-0">AÑADE O MODIFICA DATOS EN LA BASE DE DATOS.</p>
                     </div>
                     
-                    <div class="card-body">
-                        <form th:action="@{/games/save}" th:object="${game}" method="post" enctype="multipart/form-data">
-                            
-                            <input type="hidden" th:field="*{id}" />
-                            <input type="hidden" th:field="*{coverImg}" />
+                    <form th:action="@{/games/save}" th:object="${game}" method="post" enctype="multipart/form-data">
+                        
+                        <input type="hidden" th:field="*{id}" />
+                        <input type="hidden" th:field="*{coverImg}" />
 
-                            <div class="mb-3">
-                                <label class="form-label">Título del Juego</label>
+                        <div class="mb-3">
+                            <label class="text-secondary small fw-bold text-uppercase mb-1">Título del Juego</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-controller"></i></span>
                                 <input type="text" th:field="*{title}" 
                                        class="form-control" 
                                        th:errorclass="is-invalid"
                                        placeholder="Ej: Super Mario World" />
-                                
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
-                                    El título es obligatorio.
-                                </div>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Plataforma</label>
-                                <select th:field="*{console}" class="form-select" th:errorclass="is-invalid">
-                                    <option th:each="c : ${consoles}" 
-                                            th:value="${c.id}" 
-                                            th:text="${c.name}">SNES</option>
-                                </select>
-                                <div th:if="${consoles.empty}" class="form-text text-danger">
-                                    ⚠️ No tienes consolas creadas. Crea una primero.
-                                </div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('console')}" th:errors="*{console}">
-                                    Debes seleccionar una plataforma.
-                                </div>
+                            <div class="invalid-feedback d-block text-danger small mt-1" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                                Error en el título.
                             </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Género</label>
-                                <select th:field="*{genre}" class="form-select" th:errorclass="is-invalid">
-                                    <option value="" disabled selected>-- Selecciona un género --</option>
-                                    <option value="Acción">💥 Acción</option>
-                                    <option value="Aventura">🗺️ Aventura</option>
-                                    <option value="RPG">⚔️ RPG / Rol</option>
-                                    <option value="Plataformas">🏃 Plataformas</option>
-                                    <option value="Deportes">⚽ Deportes</option>
-                                    <option value="Carreras">🏎️ Carreras</option>
-                                    <option value="Lucha">🥊 Lucha</option>
-                                    <option value="Estrategia">🧠 Estrategia</option>
-                                    <option value="Terror">👻 Terror</option>
-                                    <option value="Shooter">🔫 Shooter</option>
-                                    <option value="Puzzle">🧩 Puzzle</option>
-                                    <option value="Simulación">🏗️ Simulación</option>
-                                    <option value="Retro">👾 Arcade / Retro</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}">
-                                    El género es obligatorio.
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Fecha Lanzamiento</label>
-                                    <input type="date" th:field="*{launchDate}" class="form-control" />
-                                </div>
-
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Estado</label>
-                                    <select th:field="*{status}" class="form-select">
-                                        <option value="Pendiente">Pendiente</option>
-                                        <option value="Jugando">Jugando</option>
-                                        <option value="Completado">Completado</option>
-                                        <option value="Abandonado">Abandonado</option>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="text-secondary small fw-bold text-uppercase mb-1">Plataforma</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-hdd-rack"></i></span>
+                                    <select th:field="*{console}" class="form-select" th:errorclass="is-invalid">
+                                        <option th:each="c : ${consoles}" 
+                                                th:value="${c.id}" 
+                                                th:text="${c.name}">SNES</option>
                                     </select>
                                 </div>
+                                <div th:if="${consoles.empty}" class="text-danger small mt-1">
+                                    <i class="bi bi-exclamation-circle"></i> Crea una consola primero.
+                                </div>
+                            </div>
 
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Valoración (0-10)</label>
+                            <div class="col-md-6">
+                                <label class="text-secondary small fw-bold text-uppercase mb-1">Género</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-tags"></i></span>
+                                    <select th:field="*{genre}" class="form-select" th:errorclass="is-invalid">
+                                        <option value="" disabled selected>SELECCIONAR</option>
+                                        <option value="Acción">ACCIÓN</option>
+                                        <option value="Aventura">AVENTURA</option>
+                                        <option value="RPG">RPG / ROL</option>
+                                        <option value="Plataformas">PLATAFORMAS</option>
+                                        <option value="Deportes">DEPORTES</option>
+                                        <option value="Carreras">CARRERAS</option>
+                                        <option value="Lucha">LUCHA</option>
+                                        <option value="Estrategia">ESTRATEGIA</option>
+                                        <option value="Terror">TERROR</option>
+                                        <option value="Shooter">SHOOTER</option>
+                                        <option value="Puzzle">PUZZLE</option>
+                                        <option value="Simulación">SIMULACIÓN</option>
+                                        <option value="Retro">ARCADE / RETRO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="text-secondary small fw-bold text-uppercase mb-1">Lanzamiento</label>
+                                <input type="date" th:field="*{launchDate}" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="text-secondary small fw-bold text-uppercase mb-1">Estado</label>
+                                <select th:field="*{status}" class="form-select">
+                                    <option value="Pendiente">PENDIENTE</option>
+                                    <option value="Jugando">JUGANDO</option>
+                                    <option value="Completado">COMPLETADO</option>
+                                    <option value="Abandonado">ABANDONADO</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="text-secondary small fw-bold text-uppercase mb-1">Nota (0-10)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-star-fill"></i></span>
                                     <input type="number" th:field="*{rate}" 
-                                           class="form-control" 
+                                           class="form-control text-center fw-bold" 
                                            th:errorclass="is-invalid"
-                                           min="0" max="10" />
-                                    
-                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rate')}" th:errors="*{rate}">
-                                        La nota debe estar entre 0 y 10.
-                                    </div>
+                                           min="0" max="10" step="1" 
+                                           placeholder="8" />
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="mb-4">
-                                <label class="form-label">Portada del Juego</label>
-                                <input type="file" name="file" class="form-control" accept="image/*" />
-                                
-                                <div th:if="${game.coverImg != null}" class="mt-2">
-                                    <p class="small text-muted">Imagen actual:</p>
-                                    <img th:src="@{'/uploads/' + ${game.coverImg}}" style="height: 100px;" class="img-thumbnail">
-                                </div>
+                        <div class="mb-4">
+                            <label class="text-secondary small fw-bold text-uppercase mb-1">Portada (Imagen)</label>
+                            <input type="file" name="file" class="form-control" accept="image/*" />
+                            
+                            <div th:if="${game.coverImg != null}" class="mt-3 p-2 border border-secondary rounded bg-dark d-inline-block">
+                                <p class="small text-secondary mb-1">PORTADA ACTUAL:</p>
+                                <img th:src="@{'/uploads/' + ${game.coverImg}}" style="height: 100px; object-fit: cover;" class="rounded border border-secondary">
                             </div>
+                        </div>
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg">Guardar Juego 💾</button>
-                                <a th:href="@{/games}" class="btn btn-secondary">Cancelar</a>
-                            </div>
+                        <div class="d-grid gap-2 pt-3 border-top border-secondary border-opacity-25">
+                            <button type="submit" class="btn val-btn-register py-2 text-uppercase fw-bold" style="letter-spacing: 1px;">
+                                <i class="bi bi-save2-fill me-2"></i> Guardar Datos
+                            </button>
+                            <a th:href="@{/games}" class="btn btn-outline-secondary py-2 text-uppercase fw-bold text-white-50" style="letter-spacing: 1px;">
+                                Cancelar Misión
+                            </a>
+                        </div>
 
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

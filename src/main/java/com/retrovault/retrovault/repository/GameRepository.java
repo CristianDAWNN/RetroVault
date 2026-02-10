@@ -29,10 +29,4 @@ public interface GameRepository extends JpaRepository<Game, Long> {
            "GROUP BY g.title " +
            "ORDER BY avgRate DESC")
     List<Object[]> findTopRatedTitles(Pageable pageable);
-
-    @Query("SELECT g.console.name, g.console.company, COUNT(g) as c " +
-           "FROM Game g " +
-           "GROUP BY g.console.name, g.console.company " +
-           "ORDER BY c DESC")
-    List<Object[]> findTopConsoles(Pageable pageable);
 }

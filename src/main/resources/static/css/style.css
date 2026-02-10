@@ -214,7 +214,7 @@ a {
    CARDS DE JUEGOS
    =========================== */
 .game-card {
-    height: 350px;
+    height: 410px;
     overflow: hidden;
     position: relative;
     border: none;
@@ -276,24 +276,20 @@ a {
 }
 
 /* ===========================
-   RANKING
+   RANKING HERO
    =========================== */
 .val-hero {
-    min-height: 70vh;
-    
+    min-height: 50vh;
     background-image: 
         linear-gradient(rgba(20, 20, 20, 0.5), rgba(20, 20, 20, 0.8)), 
         url('/img/hero-bg.jpg'); 
-    
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    
     position: relative;
     overflow: hidden;
     margin-top: -30px;
     padding-bottom: 50px;
-    
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -365,7 +361,7 @@ a {
     border: 4px solid var(--val-red);
 }
 
-/* RANK */
+/* RANK POSITIONS */
 .rank-1 {
     transform: scale(1.1) translateY(-30px);
     z-index: 10;
@@ -404,7 +400,7 @@ a {
 }
 
 /* ===========================
-    ESTILOS DASHBOARD (STATS & TOP GAMES)
+   ESTILOS DASHBOARD
    =========================== */
 .val-dashboard-card {
     background-color: #1a1a1a;
@@ -493,16 +489,20 @@ a {
    =========================== */
 .val-tab-btn {
     background-color: transparent;
+    
     border: 1px solid rgba(255, 255, 255, 0.5) !important; 
     color: white !important; 
-    min-width: 180px; 
+    
+    min-width: 180px;
     justify-content: center;
+    
     border-radius: 50px; 
     padding: 12px 20px;
     font-weight: 700; 
     text-transform: uppercase;
     letter-spacing: 1.5px;
     transition: all 0.3s ease;
+    
     display: flex;
     align-items: center;
     gap: 10px;
@@ -524,4 +524,77 @@ a {
     color: white !important;
     box-shadow: 0 0 20px rgba(255, 70, 85, 0.4);
     transform: translateY(-2px); 
+}
+
+.val-tab-content {
+    transition: opacity 0.4s ease;
+}
+
+/* AJUSTE RESPONSIVE PARA TABS */
+@media (max-width: 768px) {
+    .val-tab-btn {
+        min-width: auto !important;
+        padding: 10px 15px !important;
+        font-size: 0.8rem;
+        flex: 1;
+    }
+}
+
+/* ===========================
+   FORMULARIOS Y INPUTS (MODO TÁCTICO)
+   =========================== */
+
+.form-control, 
+.form-select {
+    background-color: #0a0a0a !important;
+    border: 1px solid #444 !important;
+    color: white !important;
+    padding: 12px 15px;
+    color-scheme: dark; 
+}
+
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+}
+
+.form-control::file-selector-button {
+    background-color: #222;
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-right: 15px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.form-control:hover::file-selector-button {
+    background-color: var(--val-red);
+    color: white;
+    border-color: var(--val-red);
+}
+
+.form-control:focus, 
+.form-select:focus {
+    background-color: #111 !important;
+    border-color: var(--val-red) !important; 
+    color: white !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 70, 85, 0.25) !important;
+}
+
+.form-control::placeholder {
+    color: #666 !important;
+    opacity: 1;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
 }

@@ -4,40 +4,48 @@
 <head th:replace="~{fragments/head :: header}"></head>
 
 <body>
-    <div class="container">
-        
-        <div th:replace="~{fragments/nav :: navbar}"></div>
+    
+    <div th:replace="~{fragments/nav :: navbar}"></div>
 
+    <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-dark text-white">
-                        <h2 class="h4 mb-0" th:if="${console.id == null}">Nueva Consola</h2>
-                        <h2 class="h4 mb-0" th:if="${console.id != null}">Editar Consola</h2>
+            <div class="col-md-6 col-lg-5">
+                
+                <div class="val-dashboard-card">
+                    
+                    <div class="text-center mb-4 border-bottom border-secondary pb-3">
+                        <h2 class="fw-bold text-white text-uppercase" style="font-family: 'Kanit', sans-serif; letter-spacing: 2px;">
+                            <i class="bi bi-hdd-fill me-2 text-val-red"></i>
+                            <span th:text="${console.id == null ? 'NUEVA CONSOLA' : 'EDITAR CONSOLA'}">CONSOLA</span>
+                        </h2>
+                        <p class="text-secondary small mb-0">REGISTRA UN NUEVO HARDWARE EN TU ARSENAL.</p>
                     </div>
                     
-                    <div class="card-body">
-                        <form th:action="@{/consoles/save}" th:object="${console}" method="post">
-                            
-                            <input type="hidden" th:field="*{id}" />
+                    <form th:action="@{/consoles/save}" th:object="${console}" method="post">
+                        
+                        <input type="hidden" th:field="*{id}" />
 
-                            <div class="mb-3">
-                                <label class="form-label">Fabricante / Compañía</label>
-                                <select th:field="*{company}" class="form-select">
-                                    <option value="" disabled selected>-- Elige Fabricante --</option>
+                        <div class="mb-3">
+                            <label class="text-secondary small fw-bold text-uppercase mb-1">Fabricante</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-building"></i></span>
+                                <select th:field="*{company}" class="form-select" required>
+                                    <option value="" disabled selected>SELECCIONAR FABRICANTE</option>
                                     <option th:each="comp : ${listaCompanias}" 
                                             th:value="${comp}" 
                                             th:text="${comp}">
-                                        Nintendo
+                                        NINTENDO
                                     </option>
                                 </select>
                             </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Sistema / Plataforma</label>
-                                
-                                <select th:field="*{name}" class="form-select" th:errorclass="is-invalid">
-                                    <option value="" disabled selected>-- Selecciona el Modelo --</option>
+                        <div class="mb-4">
+                            <label class="text-secondary small fw-bold text-uppercase mb-1">Modelo del Sistema</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-controller"></i></span>
+                                <select th:field="*{name}" class="form-select" th:errorclass="is-invalid" required>
+                                    <option value="" disabled selected>SELECCIONAR MODELO</option>
                                     
                                     <optgroup th:each="entry : ${mapaSistemas}" th:label="${entry.key}">
                                         <option th:each="sys : ${entry.value}" 
@@ -47,19 +55,22 @@
                                         </option>
                                     </optgroup>
                                 </select>
-                                
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
-                                    Error: Consola repetida o no válida.
-                                </div>
                             </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg">Guardar Consola 💾</button>
-                                <a th:href="@{/consoles}" class="btn btn-secondary">Cancelar</a>
+                            <div class="invalid-feedback d-block text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                Error: Debes seleccionar un sistema válido.
                             </div>
+                        </div>
 
-                        </form>
-                    </div>
+                        <div class="d-grid gap-2 pt-2 border-top border-secondary border-opacity-25">
+                            <button type="submit" class="btn val-btn-register py-2 text-uppercase fw-bold" style="letter-spacing: 1px;">
+                                <i class="bi bi-save2-fill me-2"></i> Guardar Sistema
+                            </button>
+                            <a th:href="@{/consoles}" class="btn btn-outline-secondary py-2 text-uppercase fw-bold text-white-50" style="letter-spacing: 1px;">
+                                Cancelar
+                            </a>
+                        </div>
+
+                    </form>
                 </div>
             </div>
         </div>

@@ -21,14 +21,20 @@ public class ConsoleService {
     public void saveConsole(Console console) {
         consoleRepository.save(console);
     }
-    public void deleteConsole(Long id) {
+
+    public void delete(Long id) {
         consoleRepository.deleteById(id);
     } 
+
     public List<Console> getConsolesByUser(User user) {
         return consoleRepository.findByUser(user);
     }
 
     public boolean existsByNameAndUser(String name, User user) {
         return consoleRepository.existsByNameAndUser(name, user);
+    }
+    
+    public Console getConsoleById(Long id) {
+        return consoleRepository.findById(id).orElse(null);
     }
 }

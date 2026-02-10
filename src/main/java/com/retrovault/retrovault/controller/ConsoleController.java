@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.LinkedHashMap; // Importante para mantener el orden
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +33,15 @@ public class ConsoleController {
 
     @Autowired
     private UserService userService;
+
+    // Listas para los desplegables
     private List<String> listaCompanias = Arrays.asList(
         "Nintendo", "Sony", "Microsoft", "Sega", "Atari", 
         "SNK (Neo Geo)", "NEC (PC Engine)", "Commodore", "Valve (Steam)", "PC / Otros"
     );
+
     private Map<String, List<String>> mapaSistemas = new LinkedHashMap<>();
+
     public ConsoleController() {
         mapaSistemas.put("Nintendo", Arrays.asList(
             "NES", "Super Nintendo (SNES)", "Nintendo 64", "GameCube", "Wii", "Wii U", "Nintendo Switch",
@@ -72,20 +77,25 @@ public class ConsoleController {
         model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
         return "consoles"; 
     }
+
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("console", new Console());
         model.addAttribute("listaCompanias", listaCompanias);
         model.addAttribute("mapaSistemas", mapaSistemas);
-        
         return "form-console";
     }
+
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         Console console = consoleService.getAllConsoles().stream()
                 .filter(c -> c.getId().equals(id))
                 .findFirst()
                 .orElse(null);
+
+        if (console == null) {
+            return "redirect:/consoles";
+        }
 
         model.addAttribute("console", console);
         model.addAttribute("listaCompanias", listaCompanias);
@@ -94,7 +104,7 @@ public class ConsoleController {
         return "form-console";
     }
 
-@PostMapping("/save")
+    @PostMapping("/save")
     public String saveConsole(@Valid @ModelAttribute Console console, 
                               BindingResult result, 
                               Principal principal,
@@ -102,15 +112,18 @@ public class ConsoleController {
 
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
+
+        // Validación de duplicado
         if (console.getId() == null && consoleService.existsByNameAndUser(console.getName(), currentUser)) {
             result.rejectValue("name", "error.console", "¡Ya tienes esta consola en tu colección!");
         }
+
         if (result.hasErrors()) {
             model.addAttribute("listaCompanias", listaCompanias);
             model.addAttribute("mapaSistemas", mapaSistemas);
-            
             return "form-console";
         }
+
         console.setUser(currentUser);
         
         if (console.getCreatedBy() == null || console.getCreatedBy().isEmpty()) {
@@ -118,6 +131,21 @@ public class ConsoleController {
         }
         
         consoleService.saveConsole(console);
+        
+        return "redirect:/consoles";
+    }
+
+    // Método borrar
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id, RedirectAttributes flash) {
+        if (id > 0) {
+            try {
+                consoleService.delete(id);
+                flash.addFlashAttribute("success", "Consola eliminada correctamente.");
+            } catch (Exception e) {
+                flash.addFlashAttribute("error", "Error al eliminar la consola.");
+            }
+        }
         return "redirect:/consoles";
     }
 }

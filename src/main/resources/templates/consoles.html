@@ -5,53 +5,71 @@
 
 <body>
 
-    <div class="container">
-        
-        <div th:replace="~{fragments/nav :: navbar}"></div>
+    <div th:replace="~{fragments/nav :: navbar}"></div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
-            <h1>🕹️ Mis Consolas</h1>
-            <a th:href="@{/consoles/new}" class="btn btn-primary">+ Nueva Consola</a>
+    <div class="container mt-5 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-white text-uppercase mb-0" style="font-family: 'Kanit', sans-serif; letter-spacing: 1px;">
+                <i class="bi bi-hdd-stack-fill me-2 text-val-red"></i> MIS CONSOLAS
+            </h2>
+            <a th:href="@{/consoles/new}" class="btn val-btn-register text-uppercase fw-bold" style="letter-spacing: 1px;">
+                <i class="bi bi-plus-lg me-1"></i> Nueva Consola
+            </a>
         </div>
 
-        <table class="table table-striped table-hover shadow-sm bg-white rounded">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Compañía</th>
-                    <th>Fecha Registro</th> <th>Juegos</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="c : ${consoles}">
-                    
-                    <td th:text="${c.name}" style="font-weight: bold;">Sega Mega Drive</td>
-                    
-                    <td th:text="${c.company}">Sega</td>
-                    
-                    <td th:text="${c.createdAt != null} ? ${#temporals.format(c.createdAt, 'dd/MM/yyyy')} : '-'">
-                        01/01/2023
-                    </td>
-                    
-                    <td>
-                        <span class="badge bg-info text-dark" 
-                              th:text="${c.games != null ? c.games.size() + ' juegos' : '0 juegos'}">
-                            0 juegos
-                        </span>
-                    </td>
-                    
-                    <td>
-                        <a th:href="@{/consoles/edit/{id}(id=${c.id})}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                        <a th:href="@{/consoles/delete/{id}(id=${c.id})}" class="btn btn-sm btn-danger" 
-                           onclick="return confirm('¿Borrar esta consola borrará también sus juegos asociados?');">🗑️ Borrar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="val-dashboard-card">
+            
+            <div class="table-responsive">
+                <table class="table val-table align-middle mb-0">
+                    <thead>
+                        <tr class="text-val-red small text-uppercase fw-bold">
+                            <th>SISTEMA</th>
+                            <th>COMPAÑÍA</th>
+                            <th>REGISTRADA</th>
+                            <th class="text-center">COLECCIÓN</th>
+                            <th class="text-end">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${consoles}" class="val-game-row">
+                            
+                            <td class="fw-bold text-white" th:text="${c.name}">Sega Mega Drive</td>
+                            
+                            <td class="text-secondary" th:text="${c.company}">Sega</td>
+                            
+                            <td class="text-secondary small" th:text="${c.createdAt != null} ? ${#temporals.format(c.createdAt, 'dd/MM/yyyy')} : '-'">
+                                01/01/2023
+                            </td>
+                            
+                            <td class="text-center">
+                                <span class="badge bg-dark border border-secondary text-white" 
+                                      th:text="${c.games != null ? c.games.size() : '0'}">
+                                    0
+                                </span>
+                            </td>
+                            
+                            <td class="text-end">
+                                <a th:href="@{/consoles/edit/{id}(id=${c.id})}" class="btn btn-sm btn-outline-secondary me-2" title="Editar">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a th:href="@{/consoles/delete/{id}(id=${c.id})}" class="btn btn-sm btn-outline-danger" 
+                                   title="Borrar"
+                                   onclick="return confirm('¿Eliminar esta consola y sus juegos asociados? Esta acción no se puede deshacer.');">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <div th:if="${consoles.empty}" class="alert alert-warning text-center">
-            No tienes consolas registradas. ¡Añade tu primera consola! 👇
+            <div th:if="${consoles.empty}" class="text-center py-5">
+                <i class="bi bi-hdd-network text-secondary display-1 mb-3 d-block"></i>
+                <h5 class="text-white fw-bold">NO HAY CONSOLAS REGISTRADAS</h5>
+                <p class="text-secondary small">Añade tu primer sistema para empezar a catalogar juegos.</p>
+            </div>
+
         </div>
 
     </div>

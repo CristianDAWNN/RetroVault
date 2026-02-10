@@ -76,7 +76,7 @@
             <div class="col-lg-6">
                 <div class="val-dashboard-card h-100">
                     <h4 class="text-white fw-bold mb-3">Estadísticas de Género</h4>
-                    <p class="text-secondary small mb-4">Descubre qué categorías dominan la colección global de RetroVault.</p>
+                    <p class="text-secondary small mb-4">Descubre qué categorías dominan la colección global.</p>
                     
                     <div class="table-responsive">
                         <table class="table table-dark table-hover align-middle val-table mb-0">
@@ -91,7 +91,7 @@
                                 <tr th:each="stat : ${topGenres}">
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            <i class="bi bi-diagram-3-fill text-val-red"></i>
+                                            <i class="bi bi-pie-chart-fill text-val-red"></i>
                                             <span class="fw-bold" th:text="${stat[0]}">RPG</span>
                                         </div>
                                     </td>
@@ -109,19 +109,19 @@
             <div class="col-lg-6">
                 <div class="val-dashboard-card h-100">
                     <h4 class="text-white fw-bold mb-3">Joyas de la Comunidad</h4>
-                    <p class="text-secondary small mb-4">Los títulos con mejor puntuación media otorgada por los jugadores.</p>
+                    <p class="text-secondary small mb-4">Los títulos mejor valorados por los jugadores.</p>
                     
                     <div class="d-flex flex-column gap-3">
-                        
-                        <div th:each="gameStats, iterStat : ${communityTopGames}" class="val-game-row d-flex align-items-center p-3 rounded">
+                        <div th:each="gameStats : ${communityTopGames}" class="val-game-row d-flex align-items-center p-3 rounded">
                             <img th:src="@{'/uploads/' + ${gameStats[2]}}" class="rounded" style="width: 80px; height: 50px; object-fit: cover;">
                             
                             <div class="ms-3 flex-grow-1">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 text-white fw-bold text-uppercase text-truncate" style="max-width: 200px;" th:text="${gameStats[0]}">TITULO</h6>
+                                    <h6 class="mb-0 text-white fw-bold text-uppercase text-truncate" style="max-width: 180px;" th:text="${gameStats[0]}">TITULO</h6>
                                     
-                                    <span class="badge bg-black border border-secondary text-val-red">
-                                        ★ <span th:text="${#numbers.formatDecimal(gameStats[1], 1, 1)}">9.5</span>
+                                    <span class="badge bg-black border border-secondary text-val-red d-flex align-items-center gap-1">
+                                        <i class="bi bi-star-fill" style="font-size: 0.7rem;"></i> 
+                                        <span th:text="${#numbers.formatDecimal(gameStats[1], 1, 1)}">9.5</span>
                                     </span>
                                 </div>
                                 <div class="progress" style="height: 4px; background-color: rgba(255,255,255,0.1);">
@@ -134,30 +134,27 @@
                         <div th:if="${communityTopGames.empty}" class="text-center text-secondary py-4">
                             <small>Aún no hay suficientes valoraciones.</small>
                         </div>
-                        
-                        <div class="mt-auto text-center pt-3">
-                            <a th:href="@{/ranking}" class="btn btn-sm btn-outline-secondary w-100">
-                                Ver Ranking Completo
-                            </a>                        
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div th:if="${!latestGames.empty}" class="mb-5">
-            <h2 class="text-start mb-4 text-white fw-bold border-bottom border-secondary pb-2" style="font-family: 'Kanit', sans-serif;">
-                🔥 Recién Añadidos
-            </h2>
+            <div class="text-center mb-4">
+                <h3 class="text-white fw-bold d-inline-block me-2" style="font-family: 'Kanit', sans-serif;">LO ÚLTIMO,</h3>
+                <span class="text-secondary">echa un vistazo a los últimos juegos añadidos.</span>
+            </div>
+
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <div class="col" th:each="game : ${latestGames}">
                     <div class="game-card">
                         <img th:src="@{'/uploads/' + ${game.coverImg}}" class="game-card-img">
+                        
                         <div class="game-info-overlay">
-                            <h5 class="fw-bold text-uppercase" th:text="${game.title}">Título</h5>
-                            <span class="badge bg-primary mb-2" th:text="${game.console.name}">Consola</span>
+                            <h5 class="fw-bold text-uppercase mb-1" th:text="${game.title}">Título</h5>
+                            <span class="badge bg-val-red mb-2" th:text="${game.console.name}">Consola</span>
                             <small class="d-block text-white-50">
-                                Colección de: <span class="text-white" th:text="${game.createdBy}">User</span>
+                                Jugadores: <span class="text-white fw-bold" th:text="${game.createdBy}">User</span>
                             </small>
                         </div>
                     </div>

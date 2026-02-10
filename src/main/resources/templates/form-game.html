@@ -40,7 +40,7 @@
                                 <label class="text-secondary small fw-bold text-uppercase mb-1">Título del Juego</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-controller"></i></span>
-                                    <input type="text" th:field="*{title}" class="form-control" placeholder="Ej: Super Mario World" th:errorclass="is-invalid"/>
+                                    <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="Ej: Super Mario World" th:errorclass="is-invalid"/>
                                 </div>
                                 <div class="invalid-feedback d-block text-danger small mt-1" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error</div>
                             </div>
@@ -50,17 +50,24 @@
                                     <label class="text-secondary small fw-bold text-uppercase mb-1">Plataforma</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-hdd-rack"></i></span>
-                                        <select th:field="*{console}" class="form-select" th:errorclass="is-invalid">
+                                        
+                                        <select id="console" th:field="*{console}" class="form-select" th:errorclass="is-invalid">
+                                            <option value="" selected>-- Seleccionar --</option>
                                             <option th:each="c : ${consoles}" th:value="${c.id}" th:text="${c.name}">SNES</option>
                                         </select>
+                                        
+                                        <a href="/consoles/new" target="_blank" class="btn btn-outline-secondary d-flex align-items-center" title="Crear nueva consola (se abre en otra pestaña)">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </a>
                                     </div>
+                                    <div class="invalid-feedback d-block text-danger small mt-1" th:if="${#fields.hasErrors('console')}" th:errors="*{console}">Error</div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="text-secondary small fw-bold text-uppercase mb-1">Género</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-tags"></i></span>
-                                        <select th:field="*{genre}" class="form-select" th:errorclass="is-invalid">
+                                        <select id="genre" th:field="*{genre}" class="form-select" th:errorclass="is-invalid">
                                             <option value="" disabled selected>SELECCIONAR</option>
                                             <option value="Acción">ACCIÓN</option>
                                             <option value="Aventura">AVENTURA</option>
@@ -83,7 +90,7 @@
                             <div class="row g-3 mb-4">
                                 <div class="col-md-4">
                                     <label class="text-secondary small fw-bold text-uppercase mb-1">Lanzamiento</label>
-                                    <input type="date" th:field="*{launchDate}" class="form-control" />
+                                    <input type="date" id="launchDate" th:field="*{launchDate}" class="form-control" />
                                 </div>
                                 <div class="col-md-4">
                                     <label class="text-secondary small fw-bold text-uppercase mb-1">Estado</label>
@@ -98,7 +105,7 @@
                                     <label class="text-secondary small fw-bold text-uppercase mb-1">Nota (0-10)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-star-fill"></i></span>
-                                        <input type="number" th:field="*{rate}" class="form-control text-center fw-bold" min="0" max="10" step="1" placeholder="8" />
+                                        <input type="number" id="rate" th:field="*{rate}" class="form-control text-center fw-bold" min="0" max="10" step="1" placeholder="8" />
                                     </div>
                                 </div>
                             </div>
@@ -125,19 +132,41 @@
 
                     <div id="section-ai" class="val-tab-content" style="display: none;">
                         <div class="text-center py-5">
-                            <div class="mb-4">
-                                <i class="bi bi-robot text-val-red" style="font-size: 4rem;"></i>
-                            </div>
-                            <h4 class="text-white fw-bold mb-3">INTELIGENCIA ARTIFICIAL EN ESPERA</h4>
-                            <p class="text-secondary px-4">
-                                Sube una foto de la portada del videojuego. Nuestro escáner neuronal identificará el título, la plataforma y el año automáticamente.
-                            </p>
                             
-                            <div class="mt-4 p-4 border border-secondary border-dashed rounded bg-black bg-opacity-25">
-                                <button class="btn btn-outline-light disabled">
-                                    <i class="bi bi-cloud-upload me-2"></i> Próximamente...
-                                </button>
+                            <div id="ai-loading" style="display: none;">
+                                <div class="mb-3">
+                                    <i class="bi bi-cpu-fill text-val-red animate-pulse" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="text-white fw-bold mb-3" id="ai-loading-text">ANALIZANDO PIXELES...</h5>
+                                
+                                <div class="progress bg-dark border border-secondary mx-auto w-75" style="height: 25px;">
+                                    <div id="ai-progress-bar" 
+                                         class="progress-bar progress-bar-striped progress-bar-animated bg-val-red" 
+                                         role="progressbar" 
+                                         style="width: 0%">0%</div>
+                                </div>
+                                <p class="text-secondary small mt-2" id="ai-loading-subtext">Gemini está procesando la imagen...</p>
                             </div>
+
+                            <div id="ai-upload-area">
+                                <div class="mb-4">
+                                    <i class="bi bi-robot text-val-red" style="font-size: 4rem;"></i>
+                                </div>
+                                <h4 class="text-white fw-bold mb-3">ESCANER NEURONAL LISTO</h4>
+                                <p class="text-secondary px-4 mb-4">
+                                    Sube la foto. La IA extraerá: Título, Plataforma, Género, Año y Nota estimada.
+                                </p>
+                                
+                                <div class="d-flex justify-content-center">
+                                    <div class="input-group w-75">
+                                        <input type="file" id="ai-file-input" class="form-control" accept="image/*">
+                                        <button type="button" id="btn-scan-now" class="btn val-btn-register">
+                                            <i class="bi bi-magic me-2"></i> ESCANEAR
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 

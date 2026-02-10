@@ -5,10 +5,12 @@ import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
 import com.retrovault.retrovault.service.GameService;
 import com.retrovault.retrovault.service.UserService;
+import com.retrovault.retrovault.service.GeminiService; // Importante
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,6 +35,9 @@ public class GameController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private GeminiService geminiService;
 
     @GetMapping
     public String listGames(Model model, Principal principal, @RequestParam(value = "keyword", required = false) String keyword) {
@@ -61,6 +66,18 @@ public class GameController {
         return "form-game";
     }
 
+    // --- ENDPOINT PARA LA IA (PYTHON) ---
+    @PostMapping("/api/scan")
+    @ResponseBody 
+    public ResponseEntity<String> scanCover(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("{\"error\": \"No has subido ninguna imagen\"}");
+        }
+        // Llamamos al servicio que ejecuta el script de Python
+        String jsonResult = geminiService.analyzeImage(file);
+        return ResponseEntity.ok(jsonResult);
+    }
+
     @PostMapping("/save")
     public String saveGame(@Valid @ModelAttribute Game game, 
                            BindingResult result, 
@@ -68,7 +85,7 @@ public class GameController {
                            Principal principal,
                            Model model) {
         
-        // Validación de título duplicado en la misma consola
+        // Validación de título duplicado
         if (game.getId() == null && gameService.existsByTitleAndConsole(game.getTitle(), game.getConsole())) {
             result.rejectValue("title", "error.game", "Ya tienes este juego en la plataforma " + game.getConsole().getName());
         }
@@ -80,10 +97,9 @@ public class GameController {
             return "form-game";
         }
 
-        // DETECTAMOS SI ES UN JUEGO NUEVO ANTES DE GUARDAR
         boolean isNewGame = (game.getId() == null);
 
-        // LÓGICA DE SUBIDA DE IMAGEN
+        // Lógica de subida de imagen
         if (!file.isEmpty()) {
             try {
                 Path directorioImagenes = Paths.get("uploads");
@@ -124,11 +140,10 @@ public class GameController {
         
         gameService.saveGame(game);
 
-        // SISTEMA DE XP
+        // Sistema de XP
         if (isNewGame) {
             User currentUser = userService.getUserByUsername(username);
             userService.addExperience(currentUser, 50);
-            System.out.println("🆙 " + username + " ha ganado 50 XP!");
         }
 
         return "redirect:/games";

@@ -11,11 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -88,6 +84,7 @@ public class ConsoleController {
 
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
+        // Buscamos la consola
         Console console = consoleService.getAllConsoles().stream()
                 .filter(c -> c.getId().equals(id))
                 .findFirst()
@@ -113,17 +110,55 @@ public class ConsoleController {
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
 
-        // Validación de duplicado
+        //VALIDACIÓN LÓGICA
+        String name = console.getName().toLowerCase().trim();
+        String maker = console.getCompany().toLowerCase().trim(); 
+
+        // SONY
+        if (name.contains("playstation") || name.contains("ps1") || name.contains("ps2") || name.contains("ps3") || name.contains("ps4") || name.contains("ps5") || name.contains("psp") || name.contains("vita")) {
+            if (!maker.contains("sony")) {
+                // VALIDAMOS SOBRE EL CAMPO "company"
+                result.rejectValue("company", "error.console", "¡Sacrilegio! La " + console.getName() + " es de Sony.");
+            }
+        }
+        // NINTENDO
+        if (name.contains("nintendo") || name.contains("nes") || name.contains("wii") || name.contains("switch") || name.contains("gameboy") || name.contains("ds") || name.contains("gamecube")) {
+            if (!maker.contains("nintendo")) {
+                result.rejectValue("company", "error.console", "Imposible. La " + console.getName() + " es legendaria de Nintendo.");
+            }
+        }
+        // SEGA
+        if (name.contains("sega") || name.contains("sonic") || name.contains("dreamcast") || name.contains("genesis") || name.contains("mega drive") || name.contains("saturn") || name.contains("game gear") || name.contains("master system")) {
+            if (!maker.contains("sega")) {
+                result.rejectValue("company", "error.console", "Error histórico: La " + console.getName() + " pertenece a SEGA.");
+            }
+        }
+        // MICROSOFT
+        if (name.contains("xbox")) {
+            if (!maker.contains("microsoft")) {
+                result.rejectValue("company", "error.console", "El Jefe Maestro no aprueba esto. Xbox es de Microsoft.");
+            }
+        }
+        // ATARI
+        if (name.contains("atari")) {
+             if (!maker.contains("atari")) {
+                result.rejectValue("company", "error.console", "Si pone Atari en el nombre... ¡el fabricante es Atari!");
+            }
+        }
+
+        //VALIDACIÓN DE DUPLICADOS
         if (console.getId() == null && consoleService.existsByNameAndUser(console.getName(), currentUser)) {
             result.rejectValue("name", "error.console", "¡Ya tienes esta consola en tu colección!");
         }
 
+        //SI HAY ERRORES, VOLVEMOS AL FORMULARIO
         if (result.hasErrors()) {
             model.addAttribute("listaCompanias", listaCompanias);
             model.addAttribute("mapaSistemas", mapaSistemas);
             return "form-console";
         }
 
+        //ASIGNAR USUARIO Y GUARDAR
         console.setUser(currentUser);
         
         if (console.getCreatedBy() == null || console.getCreatedBy().isEmpty()) {
@@ -135,7 +170,6 @@ public class ConsoleController {
         return "redirect:/consoles";
     }
 
-    // Método borrar
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes flash) {
         if (id > 0) {

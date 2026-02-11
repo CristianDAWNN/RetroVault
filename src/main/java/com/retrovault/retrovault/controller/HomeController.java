@@ -2,11 +2,11 @@ package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.Game;
 import com.retrovault.retrovault.model.User;
-import com.retrovault.retrovault.repository.ConsoleRepository; // ¡Importante!
 import com.retrovault.retrovault.repository.GameRepository;
 import com.retrovault.retrovault.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable; // <--- ESTE ERA EL QUE FALTABA
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,9 +24,6 @@ public class HomeController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ConsoleRepository consoleRepository;
-
     @GetMapping("/")
     public String home(Model model) {
         // Totales
@@ -35,9 +32,9 @@ public class HomeController {
 
         // Ranking Usuarios
         List<User> topPlayers = userRepository.findAll(Sort.by(Sort.Direction.DESC, "level", "experience"))
-                                              .stream()
-                                              .limit(3)
-                                              .collect(Collectors.toList());
+                                             .stream()
+                                             .limit(3)
+                                             .collect(Collectors.toList());
 
         // Top 3 Juegos (Media)
         List<Object[]> communityTopGames = gameRepository.findTopRatedTitles(PageRequest.of(0, 3));
@@ -78,8 +75,9 @@ public class HomeController {
             PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "level", "experience"))
         ).getContent();
         
-        // Top Consolas
-        List<Object[]> rankedConsoles = consoleRepository.findMostPopularConsoles(PageRequest.of(0, 10));
+        // Top Consolas (Normalizado)
+        Pageable limit = PageRequest.of(0, 10);
+        List<Object[]> rankedConsoles = gameRepository.findRankedConsoles(limit);
 
         // PREPARAR LISTAS PARA JAVASCRIPT
         
@@ -98,10 +96,10 @@ public class HomeController {
             .collect(Collectors.toList());
             
         List<Long> consoleCounts = rankedConsoles.stream()
-            .map(c -> (Long) c[2])
+            .map(c -> (Long) c[1])
             .collect(Collectors.toList());
 
-        //ENVIAR AL MODELO
+        // ENVIAR AL MODELO
         model.addAttribute("title", "Ranking Global");
         
         // Datos completos para las tablas

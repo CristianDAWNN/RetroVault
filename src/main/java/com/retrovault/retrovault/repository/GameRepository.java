@@ -2,6 +2,7 @@ package com.retrovault.retrovault.repository;
 
 import com.retrovault.retrovault.model.Console;
 import com.retrovault.retrovault.model.Game;
+import com.retrovault.retrovault.model.User;
 
 import java.util.List;
 
@@ -12,17 +13,21 @@ import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
+    
+    // Métodos básicos
     List<Game> findByCreatedBy(String username);
     List<Game> findByTitleContainingIgnoreCaseAndCreatedBy(String title, String createdBy);
     boolean existsByTitleAndConsole(String title, Console console);
     List<Game> findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
     long countByCreatedBy(String username);
     
+    // ESTADÍSTICAS
+    
     // Top Géneros
     @Query("SELECT g.genre, COUNT(g) as c FROM Game g GROUP BY g.genre ORDER BY c DESC")
     List<Object[]> findTopGenres(Pageable pageable);
 
-    // --- TOP JUEGOS MEDIA ---
+    // Top Juegos (Media de valoración)
     @Query("SELECT g.title, AVG(g.rate) as avgRate, MAX(g.coverImg) " +
            "FROM Game g " +
            "WHERE g.rate IS NOT NULL " +
@@ -30,6 +35,21 @@ public interface GameRepository extends JpaRepository<Game, Long> {
            "ORDER BY avgRate DESC")
     List<Object[]> findTopRatedTitles(Pageable pageable);
 
-    // Busca juegos creados lista de usuarios y los ordena por fecha
+    // Top Consolas
+    @Query("SELECT MAX(c.name), COUNT(c) as total " +
+           "FROM Console c " +
+           "GROUP BY LOWER(TRIM(c.name)) " +
+           "ORDER BY total DESC")
+    List<Object[]> findRankedConsoles(Pageable pageable);
+
+    // MÉTODOS PARA ACTIVIDAD
+
+    // Busca juegos de una lista de usuarios
+    List<Game> findByUserInOrderByCreatedAtDesc(List<User> users, Pageable pageable);
+
+    // Busca juegos de un solo usuario especifico
+    List<Game> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+
+    // Legacy
     List<Game> findByCreatedByInOrderByCreatedAtDesc(List<String> usernames);
 }

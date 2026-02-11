@@ -18,6 +18,27 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
 
+                <div class="row justify-content-center mb-4" th:if="${followingCount > 0}">
+                    <div class="col-lg-8">
+                        <form action="/activity" method="get" class="d-flex gap-2 justify-content-center">
+                            
+                            <select name="filterUserId" class="form-select bg-dark text-white border-secondary" 
+                                    onchange="this.form.submit()" style="max-width: 300px;">
+                                <option value="">📡 Ver actividad de todos</option>
+                                <option th:each="friend : ${following}" 
+                                        th:value="${friend.id}" 
+                                        th:text="'👤 ' + ${friend.username}"
+                                        th:selected="${friend.id == selectedUser}">
+                                </option>
+                            </select>
+                            
+                            <a th:if="${selectedUser != null}" th:href="@{/activity}" class="btn btn-outline-danger" title="Limpiar filtro">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
                 <div th:if="${followingCount == 0}" class="text-center py-5 val-dashboard-card">
                     <i class="bi bi-people text-secondary" style="font-size: 4rem;"></i>
                     <h3 class="text-white mt-3 fw-bold">El radar está vacío</h3>

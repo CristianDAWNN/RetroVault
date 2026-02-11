@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -64,11 +65,41 @@ public class User {
 
     public int getExpPercentage() {
         int meta = getXpToNextLevel();
-        
         if (meta == 0) return 0;
-        
         return (int) ((double) this.experience / meta * 100);
     }
+
+    //SISTEMA DE FOLLOWS
+    
+    //(Following)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_follows", // Nombre de la tabla intermedia
+        joinColumns = @JoinColumn(name = "follower_id"), // Yo (el que sigue)
+        inverseJoinColumns = @JoinColumn(name = "followed_id") // Al que sigo
+    )
+    private List<User> following = new ArrayList<>();
+
+    //(Followers)
+    @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY)
+    private List<User> followers = new ArrayList<>();
+
+    public void follow(User userToFollow) {
+        if (this.following == null) {
+            this.following = new ArrayList<>();
+        }
+        if (!this.following.contains(userToFollow)) {
+            this.following.add(userToFollow);
+        }
+    }
+
+    public void unfollow(User userToUnfollow) {
+        if (this.following != null) {
+            this.following.remove(userToUnfollow);
+        }
+    }
+
+    // --- AUDITORÍA ---
 
     @PrePersist
     protected void onCreate() {

@@ -36,21 +36,17 @@ public class UserService {
         return userRepository.findAll();
     }
 
-public void saveUser(User user) {
+    public void saveUser(User user) {
         if (user.getId() == null || !user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        
         user.setActive(true);
-        
         if (user.getCreatedAt() == null) {
-            user.setCreatedAt(java.time.LocalDateTime.now());
+            user.setCreatedAt(LocalDateTime.now());
         }
-        
         if (user.getRole() == null) {
             user.setRole("USER");
         }
-        
         userRepository.save(user);
     }
 
@@ -58,50 +54,21 @@ public void saveUser(User user) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public void updateUserFromAdmin(User user) {
-        User existingUser = userRepository.findById(user.getId()).orElse(null);
-        if (existingUser != null) {
-            existingUser.setUsername(user.getUsername());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setRole(user.getRole());
-            userRepository.save(existingUser);
-        }
-    }
-
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-
     public void updateUserAvatar(Long userId, MultipartFile avatarFile) throws Exception {
         User user = getUserById(userId);
-        
-        if (!avatarFile.isEmpty()) {
+        if (user != null && !avatarFile.isEmpty()) {
             String fileName = UUID.randomUUID().toString() + "_" + avatarFile.getOriginalFilename();
-            
             Path uploadPath = Paths.get("uploads/avatars");
-            
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            
             user.setAvatar(fileName);
-            
             userRepository.save(user);
         }
     }
 
-    public void updateLastLogin(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            user.setLastLogin(LocalDateTime.now());
-            userRepository.save(user);
-        }
-    }
-
-    //AÑADIR EXPERIENCIA Y SUBIR DE NIVEL
     public void addExperience(User user, int amount){
         int currentXp = user.getExperience() + amount;
         int nextLevelXp = user.getXpToNextLevel();
@@ -113,5 +80,51 @@ public void saveUser(User user) {
         }
         user.setExperience(currentXp);
         userRepository.save(user);
+    }
+
+    public void followUser(String myUsername, Long userIdToFollow) {
+        User me = userRepository.findByUsername(myUsername);
+        User target = userRepository.findById(userIdToFollow).orElse(null);
+
+        if (me != null && target != null && !me.getId().equals(target.getId())) {
+            me.follow(target);
+            userRepository.save(me);
+        }
+    }
+
+    public void unfollowUser(String myUsername, Long userIdToUnfollow) {
+        User me = userRepository.findByUsername(myUsername);
+        User target = userRepository.findById(userIdToUnfollow).orElse(null);
+
+        if (me != null && target != null) {
+            me.unfollow(target);
+            userRepository.save(me);
+        }
+    }
+
+    public void deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+        }
+    }
+
+    public void updateLastLogin(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setLastLogin(LocalDateTime.now());
+            userRepository.save(user);
+        }
+    }
+
+    public void updateUserFromAdmin(User user) {
+        User existingUser = userRepository.findById(user.getId()).orElse(null);
+        
+        if (existingUser != null) {
+            existingUser.setUsername(user.getUsername());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setRole(user.getRole());
+            existingUser.setActive(user.isActive());            
+            userRepository.save(existingUser);
+        }
     }
 }

@@ -29,4 +29,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
            "GROUP BY g.title " +
            "ORDER BY avgRate DESC")
     List<Object[]> findTopRatedTitles(Pageable pageable);
+
+    // Busca juegos creados lista de usuarios y los ordena por fecha
+    List<Game> findByCreatedByInOrderByCreatedAtDesc(List<String> usernames);
 }

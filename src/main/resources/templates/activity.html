@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/head :: header}"></div>
+    <link rel="stylesheet" th:href="@{/css/valorant-style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-white display-5 val-font">ACTIVIDAD</h1>
+            <p class="text-val-red fw-bold text-uppercase spacing-2">Novedades de los gamers a los que sigues</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <div class="row justify-content-center mb-4" th:if="${followingCount > 0}">
+                    <div class="col-lg-8">
+                        <form action="/activity" method="get" class="d-flex gap-2 justify-content-center">
+                            
+                            <select name="filterUserId" class="form-select bg-dark text-white border-secondary" 
+                                    onchange="this.form.submit()" style="max-width: 300px;">
+                                <option value="">📡 Ver actividad de todos</option>
+                                <option th:each="friend : ${following}" 
+                                        th:value="${friend.id}" 
+                                        th:text="'👤 ' + ${friend.username}"
+                                        th:selected="${friend.id == selectedUser}">
+                                </option>
+                            </select>
+                            
+                            <a th:if="${selectedUser != null}" th:href="@{/activity}" class="btn btn-outline-danger" title="Limpiar filtro">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${followingCount == 0}" class="text-center py-5 val-dashboard-card">
+                    <i class="bi bi-people text-secondary" style="font-size: 4rem;"></i>
+                    <h3 class="text-white mt-3 fw-bold">El radar está vacío</h3>
+                    <p class="text-secondary">Aún no sigues a nadie. Busca usuarios en el Ranking para ver su actividad aquí.</p>
+                    <a th:href="@{/ranking}" class="btn val-btn-register mt-3 text-uppercase fw-bold">Ir al Ranking</a>
+                </div>
+
+                <div th:if="${followingCount > 0 and activities.empty}" class="text-center py-5 val-dashboard-card">
+                    <i class="bi bi-clock-history text-secondary" style="font-size: 4rem;"></i>
+                    <h3 class="text-white mt-3 fw-bold">Todo tranquilo...</h3>
+                    <p class="text-secondary">Tus amigos no han añadido juegos recientemente.</p>
+                </div>
+
+                <div th:each="game : ${activities}" class="mb-4 fade-in-up" th:if="${game.user != null}">
+                    
+                    <div class="val-dashboard-card p-0 overflow-hidden position-relative">
+                        <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: #ff4655;"></div>
+
+                        <div class="p-3 d-flex align-items-center border-bottom border-secondary border-opacity-10" style="background: rgba(255,255,255,0.02);">
+                            
+                            <a th:href="@{/profile/{id}(id=${game.user.id})}">
+                                <img th:src="${game.user.avatar != null} ? @{'/uploads/avatars/' + ${game.user.avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" 
+                                     class="rounded-circle border border-danger me-3" 
+                                     style="width: 45px; height: 45px; object-fit: cover;">
+                            </a>
+
+                            <div>
+                                <div class="text-white fw-bold">
+                                    <a th:href="@{/profile/{id}(id=${game.user.id})}" class="text-white text-decoration-none hover-red">
+                                        <span th:text="${game.user.username}">Usuario</span>
+                                    </a>
+                                    <span class="text-secondary fw-normal ms-1">ha añadido un nuevo juego a su colección</span>
+                                </div>
+                                <small class="text-secondary x-small text-uppercase">
+                                    <i class="bi bi-clock me-1"></i> <span th:text="${#temporals.format(game.createdAt, 'dd MMM yyyy - HH:mm')}">Hace 2 horas</span>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <div class="d-flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <img th:if="${game.coverImg != null}" th:src="@{'/uploads/' + ${game.coverImg}}" 
+                                         class="rounded shadow-lg border border-secondary" 
+                                         style="width: 100px; height: 140px; object-fit: cover;">
+                                         
+                                    <div th:if="${game.coverImg == null}" class="d-flex align-items-center justify-content-center bg-dark rounded border border-secondary" style="width: 100px; height: 140px;">
+                                        <i class="bi bi-controller text-secondary fs-1"></i>
+                                    </div>
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h3 class="fw-bold text-white text-uppercase mb-1" style="font-family: 'Kanit', sans-serif;" th:text="${game.title}">TITULO</h3>
+                                        
+                                        <div class="bg-val-red text-white fw-bold px-2 py-1 rounded" style="font-size: 0.9rem;" th:if="${game.rate != null}">
+                                            <i class="bi bi-star-fill me-1" style="font-size: 0.7rem;"></i>
+                                            <span th:text="${game.rate}">8</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <span class="badge bg-dark border border-secondary text-secondary me-1" th:text="${game.console.name}">SNES</span>
+                                        <span class="badge bg-dark border border-secondary text-secondary" th:text="${game.genre}">RPG</span>
+                                    </div>
+
+                                    <div class="p-2 rounded border border-secondary border-opacity-25" style="background-color: #0a0a0a;">
+                                        <small class="text-secondary d-block text-uppercase fw-bold x-small mb-1">Estado</small>
+                                        <div class="d-flex align-items-center text-white small fw-bold">
+                                            <i class="bi bi-circle-fill me-2 text-val-red" style="font-size: 0.5rem;"></i>
+                                            <span th:text="${game.status}">JUGANDO</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

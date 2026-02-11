@@ -56,7 +56,7 @@ public class Game {
     @NotNull(message = "Debes elegir una plataforma")
     private Console console;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

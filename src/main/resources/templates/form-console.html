@@ -40,6 +40,12 @@
                             </div>
                         </div>
 
+                        <div class="invalid-feedback d-block text-danger small mt-1"
+                            th:if="${#fields.hasErrors('company')}"
+                            th:errors="*{company}">
+                            Error en el fabricante
+                        </div>
+
                         <div class="mb-4">
                             <label class="text-secondary small fw-bold text-uppercase mb-1">Modelo del Sistema</label>
                             <div class="input-group">

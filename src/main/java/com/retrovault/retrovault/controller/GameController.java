@@ -5,7 +5,7 @@ import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
 import com.retrovault.retrovault.service.GameService;
 import com.retrovault.retrovault.service.UserService;
-import com.retrovault.retrovault.service.GeminiService; // Importante
+import com.retrovault.retrovault.service.GeminiService;
 
 import jakarta.validation.Valid;
 
@@ -66,14 +66,13 @@ public class GameController {
         return "form-game";
     }
 
-    // --- ENDPOINT PARA LA IA (PYTHON) ---
+    // --- ENDPOINT PARA LA IA ---
     @PostMapping("/api/scan")
     @ResponseBody 
     public ResponseEntity<String> scanCover(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("{\"error\": \"No has subido ninguna imagen\"}");
         }
-        // Llamamos al servicio que ejecuta el script de Python
         String jsonResult = geminiService.analyzeImage(file);
         return ResponseEntity.ok(jsonResult);
     }
@@ -85,19 +84,18 @@ public class GameController {
                            Principal principal,
                            Model model) {
         
+        String username = principal.getName();
+        User currentUser = userService.getUserByUsername(username);
+
         // Validación de título duplicado
         if (game.getId() == null && gameService.existsByTitleAndConsole(game.getTitle(), game.getConsole())) {
             result.rejectValue("title", "error.game", "Ya tienes este juego en la plataforma " + game.getConsole().getName());
         }
 
         if (result.hasErrors()) {
-            String username = principal.getName();
-            User currentUser = userService.getUserByUsername(username);
             model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
             return "form-game";
         }
-
-        boolean isNewGame = (game.getId() == null);
 
         // Lógica de subida de imagen
         if (!file.isEmpty()) {
@@ -110,12 +108,11 @@ public class GameController {
                 }
 
                 String nombreOriginal = file.getOriginalFilename();
-                String nombreLimpio = nombreOriginal.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+                String nombreLimpio = nombreOriginal != null ? nombreOriginal.replaceAll("[^a-zA-Z0-9\\.\\-]", "_") : "unknown.jpg";
                 String nombreArchivo = UUID.randomUUID().toString() + "_" + nombreLimpio;
                 
-                byte[] bytesImg = file.getBytes();
                 Path rutaCompleta = Paths.get(rutaAbsoluta + "/" + nombreArchivo);
-                Files.write(rutaCompleta, bytesImg);
+                Files.write(rutaCompleta, file.getBytes());
 
                 game.setCoverImg(nombreArchivo);
 
@@ -123,6 +120,7 @@ public class GameController {
                 e.printStackTrace(); 
             }
         } else {
+            // Si no sube nueva foto y está editando, mantenemos la anterior
             if (game.getId() != null) {
                 Game existingGame = gameService.getGameById(game.getId());
                 if (existingGame != null && game.getCoverImg() == null) {
@@ -131,20 +129,20 @@ public class GameController {
             }
         }
 
-        String username = principal.getName();
+        //ASIGNACIÓN DE USUARIO
         if (game.getId() == null) {
             game.setCreatedBy(username);
-        } else if (game.getCreatedBy() == null) {
-             game.setCreatedBy(username);
+            game.setUser(currentUser);
+            
+            // Sistema de XP
+            userService.addExperience(currentUser, 50);
+        } else {
+            // Si editamos nos aseguramos de no perder el dueño
+            if (game.getCreatedBy() == null) game.setCreatedBy(username);
+            if (game.getUser() == null) game.setUser(currentUser);
         }
         
         gameService.saveGame(game);
-
-        // Sistema de XP
-        if (isNewGame) {
-            User currentUser = userService.getUserByUsername(username);
-            userService.addExperience(currentUser, 50);
-        }
 
         return "redirect:/games";
     }
@@ -161,8 +159,20 @@ public class GameController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteGame(@PathVariable Long id) {
+    public String deleteGame(@PathVariable Long id, Principal principal) {
         gameService.deleteGame(id);
+
+        // Restar 50 XP al usuario
+        String username = principal.getName();
+        User user = userService.getUserByUsername(username);
+
+        if (user != null) {
+            int currentExp = user.getExperience();
+            int newExp = Math.max(0, currentExp - 50); 
+            user.setExperience(newExp);
+            userService.saveUser(user);
+        }
+
         return "redirect:/games";
     }
 }

@@ -55,54 +55,56 @@
                         </div>
 
                         <div class="row text-center mt-4 mb-4 mx-2 p-3 rounded border border-secondary border-opacity-25" style="background-color: rgba(255,255,255,0.02);">
-                            
                             <div class="col-6 border-end border-secondary border-opacity-25">
-                                <div class="text-secondary small fw-bold text-uppercase mb-1" style="letter-spacing: 1px;">
-                                    Juegos
-                                </div>
+                                <div class="text-secondary small fw-bold text-uppercase mb-1" style="letter-spacing: 1px;">Juegos</div>
                                 <h3 class="fw-bold text-white display-5 mb-0" th:text="${gamesCount}">0</h3>
                             </div>
-                            
                             <div class="col-6">
-                                <div class="text-secondary small fw-bold text-uppercase mb-1" style="letter-spacing: 1px;">
-                                    Consolas
-                                </div>
+                                <div class="text-secondary small fw-bold text-uppercase mb-1" style="letter-spacing: 1px;">Consolas</div>
                                 <h3 class="fw-bold text-white display-5 mb-0" th:text="${consolesCount}">0</h3>
                             </div>
-                            
                         </div>
 
-                        <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data" class="mt-4">
+                        <div class="row g-3 mb-4 px-2">
+                            <div class="col-md-6 text-center text-md-start">
+                                <label class="text-secondary x-small fw-bold text-uppercase">Nombre de Usuario</label>
+                                <div class="fs-5 text-white fw-bold" th:text="${user.username}">User</div>
+                            </div>
+                            <div class="col-md-6 text-center text-md-start">
+                                <label class="text-secondary x-small fw-bold text-uppercase">Correo electrónico</label>
+                                <div class="fs-5 text-white fw-bold text-truncate" 
+                                     th:text="${isOwnProfile ? user.email : '********@****.com'}">email@test.com</div>
+                            </div>
+                        </div>
+
+                        <form th:if="${isOwnProfile}" th:action="@{/profile/update}" method="post" enctype="multipart/form-data" class="mt-4">
                             <div th:if="${param.success}" class="alert alert-success bg-success text-white border-0 py-2 small mb-3">
                                 <i class="bi bi-check-circle-fill me-1"></i> Foto de perfil actualizada correctamente.
                             </div>
-
-                            <div class="row g-3 mb-4 px-2">
-                                <div class="col-md-6 text-center text-md-start">
-                                    <label class="text-secondary x-small fw-bold text-uppercase">Nombre de Usuario</label>
-                                    <div class="fs-5 text-white fw-bold" th:text="${user.username}">User</div>
-                                </div>
-                                <div class="col-md-6 text-center text-md-start">
-                                    <label class="text-secondary x-small fw-bold text-uppercase">Correo electrónico</label>
-                                    <div class="fs-5 text-white fw-bold text-truncate" th:text="${user.email}">email@test.com</div>
-                                </div>
-                            </div>
-
                             <div class="p-4 rounded border border-secondary border-opacity-25" style="background-color: #0a0a0a;">
                                 <label class="form-label text-val-red small fw-bold text-uppercase mb-3">
                                     <i class="bi bi-camera-fill me-1"></i> Actualizar Identificación Visual
                                 </label>
                                 <div class="input-group">
                                     <input type="file" name="avatar" class="form-control" accept="image/*">
-                                    <button type="submit" class="btn val-btn-register text-uppercase fw-bold px-4">
-                                        Subir
-                                    </button>
-                                </div>
-                                <div class="form-text text-secondary x-small mt-2">
-                                    Formatos aceptados: JPG, PNG. Máx 5MB.
+                                    <button type="submit" class="btn val-btn-register text-uppercase fw-bold px-4">Subir</button>
                                 </div>
                             </div>
                         </form>
+
+                        <div th:if="${!isOwnProfile}" class="mt-4">
+                            <form th:if="${!isFollowing}" th:action="@{/profile/follow/{id}(id=${user.id})}" method="post">
+                                <button type="submit" class="btn val-btn-register w-100 text-uppercase fw-bold py-3 shadow-lg">
+                                    <i class="bi bi-person-plus-fill me-2"></i> Seguir
+                                </button>
+                            </form>
+
+                            <form th:if="${isFollowing}" th:action="@{/profile/unfollow/{id}(id=${user.id})}" method="post">
+                                <button type="submit" class="btn btn-outline-secondary w-100 text-uppercase fw-bold py-3">
+                                    <i class="bi bi-person-dash-fill me-2"></i> Dejar de Seguir
+                                </button>
+                            </form>
+                        </div>
 
                     </div> 
                 </div> 

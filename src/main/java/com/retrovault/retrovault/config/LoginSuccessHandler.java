@@ -22,13 +22,13 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
                                         HttpServletResponse response, 
                                         Authentication authentication) throws ServletException, IOException {
         
-        //Obtener quién acaba de entrar
+        // Extrae el nombre del usuario que acaba de iniciar sesión
         String username = authentication.getName();
         
-        // Guardar la fecha en la base de datos
+        // Llama al servicio para actualizar la fecha y hora de su última conexión (last_login)
         userService.updateLastLogin(username);
         
-        //Continuar con la redirección normal
+        // Llama al método original para continuar con el flujo normal de redirección después del login
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }

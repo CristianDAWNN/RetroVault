@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("RetroVault System Initialized 🚀");
 
     // ===========================
-    //  1. BUSCADOR INTELIGENTE
+    //  BUSCADOR EN GAMES
     // ===========================
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ===========================
-    //  2. LÓGICA DE PESTAÑAS (General)
+    //  LÓGICA DE PESTAÑAS
     // ===========================
     const tabButtons = document.querySelectorAll('.val-tab-btn[data-target]');
     tabButtons.forEach(btn => {
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // ===========================
-    //  3. PESTAÑAS MANUAL / IA (Específico Formulario Juego)
+    //  PESTAÑAS MANUAL / IA en añadir games
     // ===========================
     const btnManual = document.getElementById('btn-mode-manual');
     const btnAi = document.getElementById('btn-mode-ai');
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ===========================
-    //  4. GRÁFICOS (CHART.JS)
+    //  GRÁFICOS (CHART.JS)
     // ===========================
     if (window.retroData && typeof Chart !== 'undefined') {
         const commonOptions = {
@@ -114,14 +114,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ===========================
-    //  5. LÓGICA DE ESCANEO IA (CORE)
+    //  LÓGICA DE ESCANEO IA
     // ===========================
     const btnScan = document.getElementById('btn-scan-now');
     const aiInput = document.getElementById('ai-file-input');
     const loadingDiv = document.getElementById('ai-loading');
     const uploadDiv = document.getElementById('ai-upload-area');
 
-    // Elementos de la barra de progreso
     const progressBar = document.getElementById('ai-progress-bar');
     const loadingText = document.getElementById('ai-loading-text');
     const loadingSubtext = document.getElementById('ai-loading-subtext');
@@ -129,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (btnScan && aiInput) {
         btnScan.addEventListener('click', function() {
             
-            // IMPORTANTE: Guardamos el archivo AQUI, antes de que pase nada más
+            // GUARDAMOS LA PORTADA
             const file = aiInput.files[0];
             
             if (!file) {
@@ -137,11 +136,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
-            // 1. CAMBIO DE UI
+            // CAMBIO DE UI
             uploadDiv.style.display = 'none';
             loadingDiv.style.display = 'block';
 
-            // 2. INICIAR ANIMACIÓN DE BARRA
+            // INICIAR ANIMACIÓN DE BARRA
             let progress = 0;
             progressBar.style.width = '0%';
             progressBar.innerText = '0%';
@@ -164,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }, 200);
 
-            // 3. ENVIAR PETICIÓN
+            // ENVIAR PETICION
             const formData = new FormData();
             formData.append('file', file);
 
@@ -174,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => response.json())
             .then(data => {
-                // 4. ÉXITO: COMPLETAR BARRA
+                // EXITO COMPLETAR BARRA
                 clearInterval(interval);
                 progressBar.style.width = '100%';
                 progressBar.innerText = '100%';
@@ -183,7 +182,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 loadingText.innerText = "¡ANÁLISIS COMPLETADO!";
                 loadingSubtext.innerText = "Transfiriendo datos al formulario...";
 
-                // Esperamos un poco para que el usuario vea el éxito
                 setTimeout(() => {
                     console.log("Datos de la IA:", data);
 
@@ -192,34 +190,29 @@ document.addEventListener("DOMContentLoaded", function() {
                         loadingDiv.style.display = 'none';
                         uploadDiv.style.display = 'block';
                     } else {
-                        // --- RELLENAR CAMPOS ---
-                        
-                        // Título
+                        // RELLENAR CAMPOS
                         if(data.title) document.getElementById('title').value = data.title;
                         
-                        // Fecha Exacta
                         if(data.release_date) {
                             document.getElementById('launchDate').value = data.release_date;
                         } else if (data.year) {
                             document.getElementById('launchDate').value = data.year + "-01-01";
                         }
                         
-                        // Nota
                         if(data.rate) document.getElementById('rate').value = data.rate;
 
-                        // --- TRANSFERIR IMAGEN (USANDO VARIABLE SEGURA 'file') ---
+                        // TRANSFERIR IMAGEN
                         const manualInput = document.querySelector('#section-manual input[name="file"]');
                         if (manualInput && file) { 
                             const dataTransfer = new DataTransfer();
                             dataTransfer.items.add(file);
                             manualInput.files = dataTransfer.files;
                             
-                            // Efecto visual
                             manualInput.style.border = "2px solid #0dcaf0";
                             manualInput.style.boxShadow = "0 0 10px rgba(13, 202, 240, 0.5)";
                         }
 
-                        // --- SELECT CONSOLA INTELIGENTE (MEGA LISTA) ---
+                        // SELECT CONSOLA INTELIGENTE
                         if (data.console) {
                             const consoleSelect = document.getElementById('console');
                             const aiConsole = data.console.toLowerCase().replace(/\s/g, ''); 
@@ -228,10 +221,8 @@ document.addEventListener("DOMContentLoaded", function() {
                             for (let i = 0; i < consoleSelect.options.length; i++) {
                                 const dbConsole = consoleSelect.options[i].text.toLowerCase().replace(/\s/g, '');
                                 
-                                // Coincidencia básica
                                 if (dbConsole.includes(aiConsole) || aiConsole.includes(dbConsole)) { consoleSelect.selectedIndex = i; found = true; break; }
                                 
-                                // --- NINTENDO ---
                                 if ((aiConsole === 'nes' || aiConsole === 'famicom') && dbConsole.includes('nes')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'snes' || aiConsole === 'superfamicom' || aiConsole === 'supernintendo') && dbConsole.includes('snes')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'n64' || aiConsole === 'nintendo64') && dbConsole.includes('nintendo64')) { consoleSelect.selectedIndex = i; found = true; break; }
@@ -240,14 +231,12 @@ document.addEventListener("DOMContentLoaded", function() {
                                 if ((aiConsole === 'wiiu') && dbConsole.includes('wiiu')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'switch' || aiConsole === 'nintendoswitch' || aiConsole === 'ns') && dbConsole.includes('switch')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 
-                                // Portátiles Nintendo
                                 if ((aiConsole === 'gba' || aiConsole === 'gameboyadvance') && dbConsole.includes('advance')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'gbc' || aiConsole === 'gameboycolor') && dbConsole.includes('color')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'gb' || aiConsole === 'gameboy') && dbConsole === 'gameboy') { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'nds' || aiConsole === 'ds' || aiConsole === 'nintendods') && dbConsole.includes('nintendods')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === '3ds' || aiConsole === 'nintendo3ds') && dbConsole.includes('3ds')) { consoleSelect.selectedIndex = i; found = true; break; }
 
-                                // --- SONY ---
                                 if ((aiConsole === 'ps1' || aiConsole === 'psx' || aiConsole === 'playstation') && dbConsole.includes('playstation1')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'ps2' || aiConsole === 'playstation2') && dbConsole.includes('playstation2')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'ps3' || aiConsole === 'playstation3') && dbConsole.includes('playstation3')) { consoleSelect.selectedIndex = i; found = true; break; }
@@ -256,36 +245,33 @@ document.addEventListener("DOMContentLoaded", function() {
                                 if ((aiConsole === 'psp' || aiConsole === 'playstationportable') && dbConsole.includes('psp')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'vita' || aiConsole === 'psvita') && dbConsole.includes('vita')) { consoleSelect.selectedIndex = i; found = true; break; }
 
-                                // --- MICROSOFT ---
                                 if ((aiConsole === 'xbox') && dbConsole === 'xbox') { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'xbox360' || aiConsole === '360') && dbConsole.includes('360')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'xboxone' || aiConsole === 'xone') && dbConsole.includes('one')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'xboxseries' || aiConsole === 'seriesx' || aiConsole === 'seriess') && dbConsole.includes('series')) { consoleSelect.selectedIndex = i; found = true; break; }
 
-                                // --- SEGA ---
                                 if ((aiConsole === 'sms' || aiConsole === 'mastersystem') && dbConsole.includes('mastersystem')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'md' || aiConsole === 'genesis' || aiConsole === 'megadrive') && dbConsole.includes('genesis')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'saturn' || aiConsole === 'segasaturn') && dbConsole.includes('saturn')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'dc' || aiConsole === 'dreamcast') && dbConsole.includes('dreamcast')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'gg' || aiConsole === 'gamegear') && dbConsole.includes('gamegear')) { consoleSelect.selectedIndex = i; found = true; break; }
 
-                                // --- RETRO / PC ---
                                 if ((aiConsole === 'steam' || aiConsole === 'steamdeck') && dbConsole.includes('steam')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'pc' || aiConsole === 'windows') && dbConsole.includes('pcgaming')) { consoleSelect.selectedIndex = i; found = true; break; }
                                 if ((aiConsole === 'neogeo' || aiConsole === 'aes') && dbConsole.includes('neogeo')) { consoleSelect.selectedIndex = i; found = true; break; }
                             }
 
-                            // --- SI NO SE ENCUENTRA LA CONSOLA ---
+                            // SI NO SE ENCUENTRA LA CONSOLA
                             if (!found) {
                                 consoleSelect.value = "";
-                                consoleSelect.style.border = "2px solid #ff4655"; // Rojo
+                                consoleSelect.style.border = "2px solid #ff4655";
                                 alert(`⚠️ La IA detectó "${data.console}" pero no tienes esa consola en tu lista.\nPuedes añadirla con el botón "+"`);
                             } else {
-                                consoleSelect.style.border = "2px solid #0dcaf0"; // Azul/Verde
+                                consoleSelect.style.border = "2px solid #0dcaf0";
                             }
                         }
 
-                        // --- SELECT GÉNERO ---
+                        // SELECT GÉNERO 
                         if (data.genre) {
                             const genreSelect = document.getElementById('genre');
                             for (let i = 0; i < genreSelect.options.length; i++) {
@@ -296,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             }
                         }
 
-                        // 5. CAMBIO DE PESTAÑA AUTOMÁTICO
+                        // CAMBIO DE PESTAÑA AUTOMÁTICO
                         loadingDiv.style.display = 'none';
                         uploadDiv.style.display = 'block'; 
                         document.getElementById('btn-mode-manual').click(); 
@@ -314,6 +300,163 @@ document.addEventListener("DOMContentLoaded", function() {
             .finally(() => {
                 aiInput.value = '';
             });
+        });
+    }
+
+    // ===========================
+    //  RECOMENDACIONES
+    // ===========================
+    const btnRecManual = document.getElementById('btn-rec-manual');
+    const btnRecAi = document.getElementById('btn-rec-ai');
+    const sectionRecManual = document.getElementById('section-rec-manual');
+    const sectionRecAi = document.getElementById('section-rec-ai');
+
+    // CAMBIAR PESTAÑAS
+    if (btnRecManual && btnRecAi) {
+        btnRecManual.addEventListener('click', () => {
+            btnRecManual.classList.add('active', 'btn-danger');
+            btnRecManual.classList.remove('btn-outline-danger');
+            btnRecAi.classList.remove('active', 'btn-danger');
+            btnRecAi.classList.add('btn-outline-danger');
+            sectionRecManual.style.display = 'block';
+            sectionRecAi.style.display = 'none';
+        });
+
+        btnRecAi.addEventListener('click', () => {
+            btnRecAi.classList.add('active', 'btn-danger');
+            btnRecAi.classList.remove('btn-outline-danger');
+            btnRecManual.classList.remove('active', 'btn-danger');
+            btnRecManual.classList.add('btn-outline-danger');
+            sectionRecAi.style.display = 'block';
+            sectionRecManual.style.display = 'none';
+        });
+    }
+
+    // PETICION IA
+    const btnGetAiRec = document.getElementById('btn-get-ai-rec');
+    if (btnGetAiRec) {
+        btnGetAiRec.addEventListener('click', function() {
+            const genre = document.getElementById('ai-genre-input').value.trim();
+            if(!genre) { alert("Escribe qué estás buscando primero"); return; }
+
+            const resultsDiv = document.getElementById('ai-rec-results');
+            
+            // INYECTAR BARRA DE CARGA HTML
+            resultsDiv.innerHTML = `
+                <div id="ai-rec-loading" class="mt-4 fade-in-up">
+                    <div class="text-center mb-3">
+                        <h5 id="ai-rec-loading-text" class="text-val-red fw-bold val-font mb-1">CONSULTANDO ORÁCULO...</h5>
+                        <p id="ai-rec-loading-subtext" class="text-secondary small mb-0">Conectando con Gemini...</p>
+                    </div>
+                    <div class="progress val-progress" style="height: 25px; background-color: #1f2326; border: 1px solid #333;">
+                        <div id="ai-rec-progress-bar" class="progress-bar bg-val-red progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%; font-weight: bold;">0%</div>
+                    </div>
+                </div>
+            `;
+
+            const progressBar = document.getElementById('ai-rec-progress-bar');
+            const loadingText = document.getElementById('ai-rec-loading-text');
+            const loadingSubtext = document.getElementById('ai-rec-loading-subtext');
+
+            // INICIAR ANIMACION
+            let progress = 0;
+            const interval = setInterval(() => {
+                if (progress < 90) {
+                    progress += Math.random() * 5; 
+                    if(progress > 90) progress = 90;
+                    
+                    progressBar.style.width = progress + '%';
+                    progressBar.innerText = Math.round(progress) + '%';
+                    
+                    // TEXTOS DINAMICOS
+                    if(progress > 25 && progress < 55) loadingSubtext.innerText = "Buscando en los archivos históricos...";
+                    if(progress >= 55 && progress < 85) loadingSubtext.innerText = "Filtrando por consolas y preferencias...";
+                    if(progress >= 85) loadingSubtext.innerText = "Generando lista de recomendaciones...";
+                }
+            }, 200);
+
+            // ENVIAR PETICION
+            fetch(`/api/recommendations/ai?genre=${encodeURIComponent(genre)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // EXITO COMPLETAR BARRA
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    progressBar.innerText = '100%';
+                    progressBar.classList.remove('bg-val-red');
+                    progressBar.classList.add('bg-success');
+                    
+                    loadingText.innerText = "¡RECOMENDACIONES LISTAS!";
+                    loadingText.classList.remove('text-val-red');
+                    loadingText.classList.add('text-success');
+                    loadingSubtext.innerText = "Mostrando resultados...";
+
+                    // ESPERAMOS Y MOSTRAMOS RESULTADOS
+                    setTimeout(() => {
+                        if (data.length > 0 && data[0].error) {
+                            resultsDiv.innerHTML = `<div class="alert alert-danger">Error: ${data[0].error}</div>`;
+                            return;
+                        }
+                        let html = '<div class="row mt-4">';
+                        data.forEach((game, index) => {
+                            html += `
+                            <div class="col-12 mb-3 fade-in-up" style="animation-delay: ${index * 0.1}s">
+                                <div class="val-dashboard-card border-start border-danger border-4">
+                                    <h5 class="text-white fw-bold mb-1">${game.title}</h5>
+                                    <span class="badge bg-dark border border-danger text-val-red mb-2">${game.console}</span>
+                                    <p class="text-secondary small mb-0"><i>"${game.reason}"</i></p>
+                                </div>
+                            </div>`;
+                        });
+                        html += '</div>';
+                        resultsDiv.innerHTML = html;
+                    }, 800);
+                })
+                .catch(() => {
+                    clearInterval(interval);
+                    resultsDiv.innerHTML = '<div class="alert alert-danger mt-4">Error al conectar con la IA.</div>';
+                });
+        });
+    }
+
+    // PETICION MANUAL
+    const btnGetManualRec = document.getElementById('btn-get-manual-rec');
+    if (btnGetManualRec) {
+        btnGetManualRec.addEventListener('click', function() {
+            const genre = document.getElementById('manual-genre-input').value;
+            if(!genre) { alert("Selecciona un género de la lista"); return; }
+
+            const resultsDiv = document.getElementById('manual-rec-results');
+            resultsDiv.innerHTML = '<div class="text-center text-val-red my-4"><div class="spinner-border"></div></div>';
+
+            fetch(`/api/recommendations/manual?genre=${encodeURIComponent(genre)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.length === 0) {
+                        resultsDiv.innerHTML = '<div class="alert alert-dark text-center text-white border-danger">No hay juegos de este género en la base de datos todavía. ¡Sé el primero en añadir uno!</div>';
+                        return;
+                    }
+                    let html = '<div class="row">';
+                    data.forEach((game, index) => {
+                        const consoleName = game.consoleName || "Desconocida";
+                        html += `
+                        <div class="col-12 mb-3 fade-in-up" style="animation-delay: ${index * 0.1}s">
+                            <div class="val-dashboard-card border-start border-danger border-4 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="text-white fw-bold mb-1">${game.title}</h5>
+                                    <span class="badge bg-dark border border-secondary text-secondary">${consoleName}</span>
+                                </div>
+                                <div class="text-center">
+                                    <span class="d-block text-val-red small fw-bold">NOTA</span>
+                                    <span class="badge bg-val-red fs-5">${game.rate}/10</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                    resultsDiv.innerHTML = html;
+                })
+                .catch(() => resultsDiv.innerHTML = '<div class="alert alert-danger">Error al cargar la base de datos.</div>');
         });
     }
 });

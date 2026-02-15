@@ -29,6 +29,9 @@
                 <li class="nav-item">
                     <a class="nav-link val-link" th:href="@{/activity}">Actividad</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link val-link" th:href="@{/recommendations}">Recomendaciones</a>
+                </li>
 
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link val-link text-warning" th:href="@{/admin/users}">Admin</a>

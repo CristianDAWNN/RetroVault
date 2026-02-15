@@ -448,9 +448,25 @@ a {
 }
 
 /* ===========================
-   RESPONSIVE (MÓVIL)
+   RESPONSIVE (MÓVIL y TABS)
    =========================== */
 @media (max-width: 991px) {
+    .val-navbar .navbar-collapse {
+        background-color: #0f1923;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #ff4655;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.8);
+    }
+
+    .val-navbar .navbar-collapse .d-flex.align-items-center {
+        justify-content: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
     .val-link {
         padding: 15px !important;
         text-align: center;
@@ -482,6 +498,15 @@ a {
     .rank-1 { order: 1; }
     .rank-2 { order: 2; }
     .rank-3 { order: 3; }
+}
+
+@media (max-width: 768px) {
+    .val-tab-btn {
+        min-width: auto !important;
+        padding: 10px 15px !important;
+        font-size: 0.8rem;
+        flex: 1;
+    }
 }
 
 /* ===========================
@@ -524,16 +549,6 @@ a {
 
 .val-tab-content {
     transition: opacity 0.4s ease;
-}
-
-/* AJUSTE RESPONSIVE PARA TABS */
-@media (max-width: 768px) {
-    .val-tab-btn {
-        min-width: auto !important;
-        padding: 10px 15px !important;
-        font-size: 0.8rem;
-        flex: 1;
-    }
 }
 
 /* ===========================

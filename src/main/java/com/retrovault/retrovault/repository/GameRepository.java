@@ -52,4 +52,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     // Legacy
     List<Game> findByCreatedByInOrderByCreatedAtDesc(List<String> usernames);
+    
+    // Busca los 5 mejores juegos de un género específico de la BBDO
+    List<Game> findTop5ByGenreAndRateIsNotNullOrderByRateDesc(String genre);
 }

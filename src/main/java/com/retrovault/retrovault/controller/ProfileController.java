@@ -51,17 +51,17 @@ public class ProfileController {
 
 @GetMapping("/profile/{id}")
 public String showPublicProfile(@PathVariable Long id, Model model, Principal principal) {
-    // 1. Buscamos al usuario dueño del perfil que se va a mostrar
+    // Buscamos al usuario dueño del perfil que se va a mostrar
     User publicUser = userService.getUserById(id);
     if (publicUser == null) {
         return "redirect:/";
     }
 
-    // 2. Inicializamos variables por defecto
+    // Inicializamos variables por defecto
     boolean isOwnProfile = false;
     boolean isFollowing = false;
 
-    // 3. Lógica para el usuario logueado
+    // Lógica para el usuario logueado
     if (principal != null) {
         User currentUser = userService.getUserByUsername(principal.getName());
         
@@ -69,20 +69,18 @@ public String showPublicProfile(@PathVariable Long id, Model model, Principal pr
             // Comprobamos si el ID del perfil es el mismo que el del usuario logueado
             isOwnProfile = currentUser.getId().equals(publicUser.getId());
             
-            // Comprobamos si ya lo seguimos (solo si no es nuestro propio perfil)
+            // Comprobamos si ya lo seguimos
             if (!isOwnProfile) {
                 isFollowing = currentUser.getFollowing().contains(publicUser);
             }
         }
-    } // <-- Aquí faltaba cerrar el bloque 'if (principal != null)'
+    }
 
-    // 4. PASAR DATOS AL MODELO (Esto es lo que soluciona el error 500)
+    // PASAR DATOS AL MODELO
     model.addAttribute("user", publicUser);
     model.addAttribute("isOwnProfile", isOwnProfile); 
     model.addAttribute("isFollowing", isFollowing);
 
-    // Si tienes contadores, añádelos también aquí
-    // model.addAttribute("gamesCount", gameRepository.countByCreatedBy(publicUser.getUsername()));
 
     return "profile";
 }

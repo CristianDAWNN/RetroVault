@@ -2,7 +2,9 @@ package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.Game;
 import com.retrovault.retrovault.repository.GameRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,8 +25,8 @@ public class RecommendationController {
     @Autowired
     private GameRepository gameRepository;
 
-    // API KEY de Gemini
-    private final String API_KEY = "AIzaSyDdiF9u96wXVTLX8NnYG1MjB3GEMQmUpfY"; 
+    @Value("${gemini.api.key}") 
+    private String API_KEY;
     
     // Ruta del script de pyhthon para recomendaciones IA
     private final String PYTHON_SCRIPT_PATH = "scripts/recommend.py";

@@ -27,7 +27,7 @@ public class Console {
     private String createdBy;
 
     // Una consola puede tener muchos juegos asociados
-    @OneToMany(mappedBy = "console")
+    @OneToMany(mappedBy = "console", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Game> games;
 
     @Column(name = "created_at", updatable = false)

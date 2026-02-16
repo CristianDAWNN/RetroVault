@@ -9,58 +9,61 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+// Servicio encargado de la integración con la Inteligencia Artificial (Google Gemini)
 @Service
 public class GeminiService {
 
+    // Clave de API inyectada desde el archivo de configuración para mayor seguridad
     @Value("${gemini.api.key}")
     private String apiKey;
 
+    // Método que procesa una imagen mediante un script externo de Python
     public String analyzeImage(MultipartFile file) {
         Path tempFile = null;
         try {
-            // Crear archivo temporal
+            // Generación de un archivo temporal para que el script de Python pueda acceder a la imagen
             tempFile = Files.createTempFile("upload_", ".jpg");
             Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-            // Ruta al script
+            // Localización del script de automatización
             String scriptPath = "scripts/scanner.py";
             
-            // Ejecutar Python (Detectando SO)
+            // Detección dinámica del sistema operativo para invocar el comando de Python correcto
             String pythonCmd = System.getProperty("os.name").toLowerCase().contains("win") ? "python" : "python3";
+            
+            // Configuración del proceso externo pasando la API Key y la ruta del archivo temporal
             ProcessBuilder pb = new ProcessBuilder(pythonCmd, scriptPath, apiKey, tempFile.toString());
-            pb.redirectErrorStream(true); 
+            pb.redirectErrorStream(true); // Redirige errores a la salida estándar para captura unificada
             
             Process process = pb.start();
 
-            // Leer respuesta completa
+            // Lectura de la respuesta generada por el script de Python
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder output = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                output.append(line).append(" "); // Añadimos espacio por si acaso
+                output.append(line).append(" ");
             }
             process.waitFor();
             String fullOutput = output.toString();
 
-            // --- AQUÍ ESTÁ LA MAGIA DE LIMPIEZA ---
-            // Buscamos dónde empieza '{' y dónde termina '}' para ignorar advertencias previas
+            // Lógica de saneamiento de respuesta: Extrae exclusivamente el JSON
             int jsonStart = fullOutput.indexOf("{");
             int jsonEnd = fullOutput.lastIndexOf("}");
 
             if (jsonStart != -1 && jsonEnd != -1 && jsonStart <= jsonEnd) {
-                // Extraemos SOLO el JSON limpio
+                // Retorna únicamente el objeto JSON limpio para ser procesado por el front
                 return fullOutput.substring(jsonStart, jsonEnd + 1);
             } else {
-                // Si no hay JSON, devolvemos el error escapando las barras invertidas de Windows
+                // Gestión de errores en caso de que la IA no devuelva un formato válido
                 String safeOutput = fullOutput.replace("\\", "\\\\").replace("\"", "'");
-                return "{\"error\": \"Python no devolvió JSON válido. Salida: " + safeOutput + "\"}";
+                return "{\"error\": \"Formato JSON no detectado. Salida del sistema: " + safeOutput + "\"}";
             }
-            // --------------------------------------
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return "{\"error\": \"Error interno Java: " + e.getMessage() + "\"}";
+            return "{\"error\": \"Excepción en el servicio de análisis: " + e.getMessage() + "\"}";
         } finally {
+            // Limpieza del sistema de archivos: Eliminación del recurso temporal
             try {
                 if (tempFile != null) Files.deleteIfExists(tempFile);
             } catch (Exception ignored) {}

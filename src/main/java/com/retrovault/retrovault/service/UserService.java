@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+// Servicio central para la gestión de usuarios, seguridad y sistema de niveles
 @Service
 public class UserService {
 
@@ -36,7 +37,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // Guarda el usuario gestionando el cifrado de contraseña y valores por defecto
     public void saveUser(User user) {
+        // Solo ciframos si es un usuario nuevo o si la contraseña no está ya cifrada (BCrypt empieza por $2a$)
         if (user.getId() == null || !user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -54,25 +57,33 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    // Procesa y almacena la imagen de perfil del usuario
     public void updateUserAvatar(Long userId, MultipartFile avatarFile) throws Exception {
         User user = getUserById(userId);
         if (user != null && !avatarFile.isEmpty()) {
             String fileName = UUID.randomUUID().toString() + "_" + avatarFile.getOriginalFilename();
             Path uploadPath = Paths.get("uploads/avatars");
+            
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
+            
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            
             user.setAvatar(fileName);
             userRepository.save(user);
         }
     }
 
+    // --- LÓGICA GAMING ---
+
+    // Añade experiencia y calcula la subida de nivel de forma automática
     public void addExperience(User user, int amount){
         int currentXp = user.getExperience() + amount;
         int nextLevelXp = user.getXpToNextLevel();
 
+        // Bucle por si el usuario gana tanta XP que sube varios niveles de golpe
         while (currentXp >= nextLevelXp) {
             currentXp -= nextLevelXp;
             user.setLevel(user.getLevel() + 1);
@@ -82,10 +93,13 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // --- SISTEMA SOCIAL ---
+
     public void followUser(String myUsername, Long userIdToFollow) {
         User me = userRepository.findByUsername(myUsername);
         User target = userRepository.findById(userIdToFollow).orElse(null);
 
+        // Validamos que existan y que un usuario no pueda seguirse a sí mismo
         if (me != null && target != null && !me.getId().equals(target.getId())) {
             me.follow(target);
             userRepository.save(me);
@@ -102,12 +116,7 @@ public class UserService {
         }
     }
 
-    public void deleteUser(Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-        }
-    }
-
+    // Auditoría: actualiza la última conexión
     public void updateLastLogin(String username) {
         User user = userRepository.findByUsername(username);
         if (user != null) {
@@ -116,15 +125,21 @@ public class UserService {
         }
     }
 
+    // Método para la gestión administrativa de usuarios
     public void updateUserFromAdmin(User user) {
         User existingUser = userRepository.findById(user.getId()).orElse(null);
-        
         if (existingUser != null) {
             existingUser.setUsername(user.getUsername());
             existingUser.setEmail(user.getEmail());
             existingUser.setRole(user.getRole());
             existingUser.setActive(user.isActive());            
             userRepository.save(existingUser);
+        }
+    }
+
+    public void deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
         }
     }
 }

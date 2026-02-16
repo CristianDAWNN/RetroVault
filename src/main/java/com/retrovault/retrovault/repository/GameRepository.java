@@ -14,20 +14,23 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
     
-    // Métodos básicos
+    // Métodos de consulta básicos y filtrado por users
     List<Game> findByCreatedBy(String username);
     List<Game> findByTitleContainingIgnoreCaseAndCreatedBy(String title, String createdBy);
     boolean existsByTitleAndConsole(String title, Console console);
+    
+    // Obtiene los últimos juegos añadidos que contienen imagen de portada para el index
     List<Game> findTop6ByCoverImgNotNullOrderByCreatedAtDesc();
+    
     long countByCreatedBy(String username);
     
-    // ESTADÍSTICAS
+    // --- CONSULTAS DE ESTADÍSTICAS Y RANKINGS ---
     
-    // Top Géneros
+    // Obtiene el conteo de juegos por genero para las gráficas
     @Query("SELECT g.genre, COUNT(g) as c FROM Game g GROUP BY g.genre ORDER BY c DESC")
     List<Object[]> findTopGenres(Pageable pageable);
 
-    // Top Juegos (Media de valoración)
+    // Calcula el ranking de títulos mejor valorados por la comunidad
     @Query("SELECT g.title, AVG(g.rate) as avgRate, MAX(g.coverImg) " +
            "FROM Game g " +
            "WHERE g.rate IS NOT NULL " +
@@ -35,24 +38,23 @@ public interface GameRepository extends JpaRepository<Game, Long> {
            "ORDER BY avgRate DESC")
     List<Object[]> findTopRatedTitles(Pageable pageable);
 
-    // Top Consolas
+    // Genera el ranking de consolas más utilizadas
     @Query("SELECT MAX(c.name), COUNT(c) as total " +
            "FROM Console c " +
            "GROUP BY LOWER(TRIM(c.name)) " +
            "ORDER BY total DESC")
     List<Object[]> findRankedConsoles(Pageable pageable);
 
-    // MÉTODOS PARA ACTIVIDAD
+    // --- LÓGICA DEL SISTEMA SOCIAL ---
 
-    // Busca juegos de una lista de usuarios
+    // Recupera la actividad reciente de una lista de usuarios
     List<Game> findByUserInOrderByCreatedAtDesc(List<User> users, Pageable pageable);
 
-    // Busca juegos de un solo usuario especifico
+    // Recupera la actividad reciente de un usuario específico
     List<Game> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
-    // Legacy
     List<Game> findByCreatedByInOrderByCreatedAtDesc(List<String> usernames);
     
-    // Busca los 5 mejores juegos de un género específico de la BBDO
+    // Recupera títulos destacados de un género para el motor de recomendaciones
     List<Game> findTop5ByGenreAndRateIsNotNullOrderByRateDesc(String genre);
 }

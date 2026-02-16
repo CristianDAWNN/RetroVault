@@ -52,38 +52,40 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Relación de uno a muchos con la entidad Console
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Console> consoles;
 
-    //SISTEMA DE NIVELES
+    // Atributos para el sistema de exp
     private int level = 1;
     private int experience = 0;
     
+    // Calcula la experiencia necesaria para subir al siguiente nivel
     public int getXpToNextLevel() {
         return this.level * 100; 
     }
 
+    // Calcula el porcentaje de progreso de nivel para la barra de exp
     public int getExpPercentage() {
         int meta = getXpToNextLevel();
         if (meta == 0) return 0;
         return (int) ((double) this.experience / meta * 100);
     }
 
-    //SISTEMA DE FOLLOWS
-    
-    //(Following)
+    // Seguidos
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "user_follows", // Nombre de la tabla intermedia
-        joinColumns = @JoinColumn(name = "follower_id"), // Yo (el que sigue)
-        inverseJoinColumns = @JoinColumn(name = "followed_id") // Al que sigo
+        name = "user_follows", 
+        joinColumns = @JoinColumn(name = "follower_id"), 
+        inverseJoinColumns = @JoinColumn(name = "followed_id")
     )
     private List<User> following = new ArrayList<>();
 
-    //(Followers)
+    // Seguidores
     @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private List<User> followers = new ArrayList<>();
 
+    // Lógica para seguir a un user
     public void follow(User userToFollow) {
         if (this.following == null) {
             this.following = new ArrayList<>();
@@ -93,19 +95,20 @@ public class User {
         }
     }
 
+    // Lógica para dejar de seguir a un usuario
     public void unfollow(User userToUnfollow) {
         if (this.following != null) {
             this.following.remove(userToUnfollow);
         }
     }
 
-    // --- AUDITORÍA ---
-
+    // Asignación automática de fecha al crear el registro
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
+    // Actualización automática de fecha al modificar el registro
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

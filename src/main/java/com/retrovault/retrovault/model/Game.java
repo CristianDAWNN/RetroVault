@@ -28,9 +28,8 @@ public class Game {
     @Column(name = "launch_date")
     private LocalDate launchDate; 
 
-    private String status; // Pendiente, Jugando, Completado
+    private String status; // Estados: Pendiente, Jugando, Completado
 
-    // Nota
     @Min(value = 0, message = "La nota mínima es 0")
     @Max(value = 10, message = "La nota máxima es 10")
     private Integer rate;
@@ -38,8 +37,7 @@ public class Game {
     @Column(name = "cover_img") 
     private String coverImg;
 
-    // --- AUDITORÍA DE FECHAS ---
-
+    // Campos de auditoría
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
@@ -49,23 +47,25 @@ public class Game {
     @Column(name = "created_by")
     private String createdBy;
 
-    // --- RELACIONES ---
-
+    // Relación Many-To-One: Varios juegos pertenecen a una consola
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "console_id")
     @NotNull(message = "Debes elegir una plataforma")
     private Console console;
 
+    // Relación Many-To-One: Varios juegos pertenecen a un usuario
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Asignación automática de marcas de tiempo al crear el registro
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
+    // Actualización automática de la fecha de modificación
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

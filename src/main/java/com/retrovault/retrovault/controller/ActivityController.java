@@ -5,7 +5,7 @@ import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.repository.GameRepository;
 import com.retrovault.retrovault.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest; // Para el límite
+import org.springframework.data.domain.PageRequest; 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,34 +25,38 @@ public class ActivityController {
     @Autowired
     private GameRepository gameRepository;
 
+    // Gestiona la vista de actividad de los usuarios seguidos
     @GetMapping("/activity")
     public String showActivityFeed(Model model, 
                                    Principal principal,
-                                   @RequestParam(required = false) Long filterUserId) { // Nuevo parámetro opcional
+                                   @RequestParam(required = false) Long filterUserId) { 
         
+        // Identifica al usuario actual y obtiene su lista de seguidos
         User currentUser = userService.getUserByUsername(principal.getName());
         List<User> following = currentUser.getFollowing();
         List<Game> activities = new ArrayList<>();
 
-        // CONFIGURAMOS EL LÍMITE: Solo los últimos 50 juegos
+        // Define una paginación para limitar a los últimos 50
         Pageable limit = PageRequest.of(0, 50);
 
+        // Si el usuario sigue a alguien, buscamos las actualizaciones
         if (!following.isEmpty()) {
             if (filterUserId != null) {
-                // CASO 1: Filtrar por un usuario concreto
+                // Filtra la actividad para mostrar solo la de un usuario seleccionado
                 User targetUser = userService.getUserById(filterUserId);
                 if (following.contains(targetUser)) {
                     activities = gameRepository.findByUserOrderByCreatedAtDesc(targetUser, limit);
-                    model.addAttribute("selectedUser", filterUserId); // Para marcar el select
+                    model.addAttribute("selectedUser", filterUserId); 
                 }
             } else {
-                // CASO 2: Ver todos
+                // Obtiene la actividad global de todos los usuarios seguidos ordenados por fecha
                 activities = gameRepository.findByUserInOrderByCreatedAtDesc(following, limit);
             }
         }
 
+        // Carga los datos necesarios en el modelo para la vista Thymeleaf
         model.addAttribute("activities", activities);
-        model.addAttribute("following", following); // Pasamos la lista para llenar el select
+        model.addAttribute("following", following); 
         model.addAttribute("followingCount", following.size());
         
         return "activity";

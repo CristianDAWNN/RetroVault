@@ -28,10 +28,12 @@ public class ProfileController {
     @Autowired
     private ConsoleRepository consoleRepository;
 
+    // Muestra el perfil personal del usuario autenticado
     @GetMapping("/profile")
     public String showProfile(Model model, Principal principal) {
         User user = userService.getUserByUsername(principal.getName());
         
+        // Obtenemos estadísticas del usuario para el Dashboard de perfil
         long gamesCount = gameRepository.countByCreatedBy(user.getUsername());
         long consolesCount = consoleRepository.countByUser(user);
         
@@ -39,52 +41,51 @@ public class ProfileController {
         model.addAttribute("gamesCount", gamesCount);
         model.addAttribute("consolesCount", consolesCount);
         
-        //Añadimos contadores de follows para la vista del perfil
+        // Gestión de contadores de la red social
         model.addAttribute("followingCount", user.getFollowing().size());
         model.addAttribute("followersCount", user.getFollowers().size());
 
+        // Al ser el propio perfil, configuramos los permisos de edición
         model.addAttribute("isOwnProfile", true);
         model.addAttribute("isFollowing", false); 
         
         return "profile";
     }
 
-@GetMapping("/profile/{id}")
-public String showPublicProfile(@PathVariable Long id, Model model, Principal principal) {
-    // Buscamos al usuario dueño del perfil que se va a mostrar
-    User publicUser = userService.getUserById(id);
-    if (publicUser == null) {
-        return "redirect:/";
-    }
+    // Muestra el perfil de otros usuarios permitiendo el seguimiento
+    @GetMapping("/profile/{id}")
+    public String showPublicProfile(@PathVariable Long id, Model model, Principal principal) {
+        User publicUser = userService.getUserById(id);
+        if (publicUser == null) {
+            return "redirect:/";
+        }
 
-    // Inicializamos variables por defecto
-    boolean isOwnProfile = false;
-    boolean isFollowing = false;
+        boolean isOwnProfile = false;
+        boolean isFollowing = false;
 
-    // Lógica para el usuario logueado
-    if (principal != null) {
-        User currentUser = userService.getUserByUsername(principal.getName());
-        
-        if (currentUser != null) {
-            // Comprobamos si el ID del perfil es el mismo que el del usuario logueado
-            isOwnProfile = currentUser.getId().equals(publicUser.getId());
+        // Lógica para seguir
+        if (principal != null) {
+            User currentUser = userService.getUserByUsername(principal.getName());
             
-            // Comprobamos si ya lo seguimos
-            if (!isOwnProfile) {
-                isFollowing = currentUser.getFollowing().contains(publicUser);
+            if (currentUser != null) {
+                // Verificamos si el usuario está viendo su propio perfil a través del ID público
+                isOwnProfile = currentUser.getId().equals(publicUser.getId());
+                
+                // Verificamos si ya existe una relación de seguimiento
+                if (!isOwnProfile) {
+                    isFollowing = currentUser.getFollowing().contains(publicUser);
+                }
             }
         }
+
+        model.addAttribute("user", publicUser);
+        model.addAttribute("isOwnProfile", isOwnProfile); 
+        model.addAttribute("isFollowing", isFollowing);
+
+        return "profile";
     }
 
-    // PASAR DATOS AL MODELO
-    model.addAttribute("user", publicUser);
-    model.addAttribute("isOwnProfile", isOwnProfile); 
-    model.addAttribute("isFollowing", isFollowing);
-
-
-    return "profile";
-}
-
+    // Procesa la actualización de la imagen de avatar
     @PostMapping("/profile/update")
     public String updateProfile(@RequestParam("avatar") MultipartFile avatar,
                                 Principal principal) {
@@ -99,18 +100,18 @@ public String showPublicProfile(@PathVariable Long id, Model model, Principal pr
         return "redirect:/profile?success";
     }
 
-    //NUEVOS MÉTODOS DE FOLLOW / UNFOLLOW
-
+    // Seguir a un nuevo usuario
     @PostMapping("/profile/follow/{id}")
     public String followUser(@PathVariable Long id, Principal principal, HttpServletRequest request) {
         if (principal != null) {
             userService.followUser(principal.getName(), id);
         }
-        // Volvemos al perfil del usuario que acabamos de seguir
+        // Vuelve a la pag anterior
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/profile/" + id);
     }
 
+    // dejar de seguir
     @PostMapping("/profile/unfollow/{id}")
     public String unfollowUser(@PathVariable Long id, Principal principal, HttpServletRequest request) {
         if (principal != null) {

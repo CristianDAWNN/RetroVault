@@ -23,26 +23,27 @@ public class RecommendationController {
     @Autowired
     private GameRepository gameRepository;
 
-    // API Key de Gemini
+    // API KEY de Gemini
     private final String API_KEY = "AIzaSyDdiF9u96wXVTLX8NnYG1MjB3GEMQmUpfY"; 
     
-    // Ruta script de python
+    // Ruta del script de pyhthon para recomendaciones IA
     private final String PYTHON_SCRIPT_PATH = "scripts/recommend.py";
 
-    // Mostrar HTML
+    // Carga la interfaz de usuario para el buscador de recomendaciones
     @GetMapping("/recommendations")
     public String showRecommendations(Model model) {
         return "recommendations";
     }
 
-    // MODO MANUAL: Busca en la base de datos de la base de datos
+    // MODO MANUAL: Consulta interna en la base de datos de RetroVault
     @GetMapping("/api/recommendations/manual")
     @ResponseBody
     public ResponseEntity<?> getManualRecommendations(@RequestParam String genre) {
         try {
+            // Recupera los 5 títulos mejor valorados de la comunidad para ese género
             List<Game> games = gameRepository.findTop5ByGenreAndRateIsNotNullOrderByRateDesc(genre);
             
-            // Filtramos solo lo que el frontend necesita para evitar la recursión de Jackson (Error 500)
+            // Limpieza de datos para enviar solo lo necesario a la interfaz (título, puntuación y consola)
             List<Map<String, Object>> cleanData = games.stream().map(g -> {
                 Map<String, Object> map = new HashMap<>();
                 map.put("title", g.getTitle());
@@ -53,20 +54,19 @@ public class RecommendationController {
 
             return ResponseEntity.ok(cleanData);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("[{\"error\": \"Error interno del servidor\"}]");
+            return ResponseEntity.status(500).body("[{\"error\": \"Error en la consulta local\"}]");
         }
     }
 
-    // MODO IA: Ejecuta Python y devuelve el JSON
+    // MODO IA: Integración con Python para obtener sugerencias de la ia
     @GetMapping("/api/recommendations/ai")
     @ResponseBody
     public ResponseEntity<String> getAiRecommendations(@RequestParam String genre) {
         try {
-            // Ejecutamos: python ai_recommend.py API_KEY GENERO
             ProcessBuilder processBuilder = new ProcessBuilder("python", PYTHON_SCRIPT_PATH, API_KEY, genre);
             Process process = processBuilder.start();
 
-            // Leemos lo que devuelve el print() de Python
+            // Captura de la salida estándar del script de Python
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder output = new StringBuilder();
             String line;
@@ -74,11 +74,12 @@ public class RecommendationController {
                 output.append(line);
             }
 
+            // Gestión del código de salida para asegurar que el script finalizó correctamente
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 return ResponseEntity.ok(output.toString());
             } else {
-                return ResponseEntity.status(500).body("[{\"error\": \"El script de Python falló\"}]");
+                return ResponseEntity.status(500).body("[{\"error\": \"Fallo en la ejecución del script Python\"}]");
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("[{\"error\": \"" + e.getMessage() + "\"}]");

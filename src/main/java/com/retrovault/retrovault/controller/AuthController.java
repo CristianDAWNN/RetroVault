@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+// Controlador que gestiona el login y sign
 @Controller
 public class AuthController {
 
@@ -21,40 +22,43 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
+    // Muestra la vista de inicio de sesión
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
+    // Inicializa un objeto Usuario vacío para vincularlo al formulario de registro
     @GetMapping("/register")
     public String registerForm(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
 
+    // Procesa los datos del formulario de registro con validaciones de seguridad
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute User user, 
                                BindingResult result, 
                                Model model) {
         
-        //COMPROBAR NOMBRE DUPLICADO
+        // Verifica si el nombre de usuario ya existe para evitar duplicados
         User existingUser = userService.getUserByUsername(user.getUsername());
         if (existingUser != null) {
             result.rejectValue("username", "error.user", "Este nombre de usuario ya está en uso.");
         }
 
-        //COMPROBAR MAIL DUPLICADO 
+        // Verifica si el correo electrónico ya está registrado en el sistema
         User existingEmail = userService.getUserByEmail(user.getEmail());
         if (existingEmail != null) {
             result.rejectValue("email", "error.user", "Este correo ya está registrado.");
         }
 
-        // COMPROBAR ERRORES DE VALIDACIÓN
+        // Si hay errores de validación (campos vacíos, formato de mail, duplicados), recarga el formulario
         if (result.hasErrors()) {
             return "register"; 
         }
 
-        // GUARDAR
+        // Intenta guardar el nuevo usuario en la base de datos
         try {
             userService.saveUser(user);
         } catch (Exception e) {
@@ -62,16 +66,16 @@ public class AuthController {
             return "register";
         }
 
-        //ENVIAR MAIL DE BIENVENIDA
+        // Intenta enviar un mail de bienvenida (si falla no afecta al registro)
         try {
             if (user.getEmail() != null && !user.getEmail().isEmpty()) {
                 emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
-                System.out.println("Correo de bienvenida enviado a: " + user.getEmail());
             }
         } catch (Exception e) {
-            System.err.println("Error enviando el mail: " + e.getMessage());
+            // Error controlado: el registro es válido aunque falle el envío del mail
         }
         
+        // Redirige al login confirmando el éxito de la operación
         return "redirect:/login?success";
     }
 }

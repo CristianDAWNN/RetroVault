@@ -1,0 +1,6 @@
+[providers]
+java = true
+python = true
+
+[phases.setup]
+nixPkgs = ['...', 'python3']

@@ -4,22 +4,20 @@ import com.retrovault.retrovault.model.Console;
 import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
 import com.retrovault.retrovault.service.UserService;
-
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+// Controlador encargado de gestionar el catálogo de consolas de los usuarios
 @Controller
 @RequestMapping("/consoles")
 public class ConsoleController {
@@ -30,7 +28,7 @@ public class ConsoleController {
     @Autowired
     private UserService userService;
 
-    // Listas para los desplegables
+    // Listas predefinidas para los selectores de compañías en la vista
     private List<String> listaCompanias = Arrays.asList(
         "Nintendo", "Sony", "Microsoft", "Sega", "Atari", 
         "SNK (Neo Geo)", "NEC (PC Engine)", "Commodore", "Valve (Steam)", "PC / Otros"
@@ -38,6 +36,7 @@ public class ConsoleController {
 
     private Map<String, List<String>> mapaSistemas = new LinkedHashMap<>();
 
+    // Constructor que organiza los modelos de consola por su fabricante
     public ConsoleController() {
         mapaSistemas.put("Nintendo", Arrays.asList(
             "NES", "Super Nintendo (SNES)", "Nintendo 64", "GameCube", "Wii", "Wii U", "Nintendo Switch",
@@ -66,6 +65,7 @@ public class ConsoleController {
         ));
     }
 
+    // Muestra la colección de consolas del usser
     @GetMapping
     public String listConsoles(Model model, Principal principal) {
         String username = principal.getName();
@@ -74,6 +74,7 @@ public class ConsoleController {
         return "consoles"; 
     }
 
+    // Prepara el formulario de creación de consolas
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("console", new Console());
@@ -82,9 +83,9 @@ public class ConsoleController {
         return "form-console";
     }
 
+    // Carga los datos de una consola existente para su edición
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
-        // Buscamos la consola
         Console console = consoleService.getAllConsoles().stream()
                 .filter(c -> c.getId().equals(id))
                 .findFirst()
@@ -101,6 +102,7 @@ public class ConsoleController {
         return "form-console";
     }
 
+    // Procesa el guardado de la consola con validaciones
     @PostMapping("/save")
     public String saveConsole(@Valid @ModelAttribute Console console, 
                               BindingResult result, 
@@ -110,66 +112,43 @@ public class ConsoleController {
         String username = principal.getName();
         User currentUser = userService.getUserByUsername(username);
 
-        //VALIDACIÓN LÓGICA
         String name = console.getName().toLowerCase().trim();
         String maker = console.getCompany().toLowerCase().trim(); 
 
-        // SONY
-        if (name.contains("playstation") || name.contains("ps1") || name.contains("ps2") || name.contains("ps3") || name.contains("ps4") || name.contains("ps5") || name.contains("psp") || name.contains("vita")) {
-            if (!maker.contains("sony")) {
-                // VALIDAMOS SOBRE EL CAMPO "company"
-                result.rejectValue("company", "error.console", "¡Sacrilegio! La " + console.getName() + " es de Sony.");
-            }
+        // Comprobaciones para validar que el nombre de la consola coincide con su fabricante
+        if (name.contains("playstation") && !maker.contains("sony")) {
+            result.rejectValue("company", "error.console", "La consola indicada debe pertenecer a Sony.");
         }
-        // NINTENDO
-        if (name.contains("nintendo") || name.contains("nes") || name.contains("wii") || name.contains("switch") || name.contains("gameboy") || name.contains("ds") || name.contains("gamecube")) {
-            if (!maker.contains("nintendo")) {
-                result.rejectValue("company", "error.console", "Imposible. La " + console.getName() + " es legendaria de Nintendo.");
-            }
+        if ((name.contains("nintendo") || name.contains("nes") || name.contains("wii")) && !maker.contains("nintendo")) {
+            result.rejectValue("company", "error.console", "Este sistema es propiedad de Nintendo.");
         }
-        // SEGA
-        if (name.contains("sega") || name.contains("sonic") || name.contains("dreamcast") || name.contains("genesis") || name.contains("mega drive") || name.contains("saturn") || name.contains("game gear") || name.contains("master system")) {
-            if (!maker.contains("sega")) {
-                result.rejectValue("company", "error.console", "Error histórico: La " + console.getName() + " pertenece a SEGA.");
-            }
-        }
-        // MICROSOFT
-        if (name.contains("xbox")) {
-            if (!maker.contains("microsoft")) {
-                result.rejectValue("company", "error.console", "El Jefe Maestro no aprueba esto. Xbox es de Microsoft.");
-            }
-        }
-        // ATARI
-        if (name.contains("atari")) {
-             if (!maker.contains("atari")) {
-                result.rejectValue("company", "error.console", "Si pone Atari en el nombre... ¡el fabricante es Atari!");
-            }
+        if (name.contains("xbox") && !maker.contains("microsoft")) {
+            result.rejectValue("company", "error.console", "Xbox es una marca de Microsoft.");
         }
 
-        //VALIDACIÓN DE DUPLICADOS
+        //Logica para evitar que un usuario agregue dos veces la misma consola
         if (console.getId() == null && consoleService.existsByNameAndUser(console.getName(), currentUser)) {
-            result.rejectValue("name", "error.console", "¡Ya tienes esta consola en tu colección!");
+            result.rejectValue("name", "error.console", "Esta consola ya forma parte de tu colección.");
         }
 
-        //SI HAY ERRORES, VOLVEMOS AL FORMULARIO
+        // Si existen errores de validación, se recarga el formulario con los avisos correspondientes
         if (result.hasErrors()) {
             model.addAttribute("listaCompanias", listaCompanias);
             model.addAttribute("mapaSistemas", mapaSistemas);
             return "form-console";
         }
 
-        //ASIGNAR USUARIO Y GUARDAR
+        // Vinculación del recurso al usuario y persistencia en la base de datos
         console.setUser(currentUser);
-        
         if (console.getCreatedBy() == null || console.getCreatedBy().isEmpty()) {
              console.setCreatedBy(username);
         }
         
         consoleService.saveConsole(console);
-        
         return "redirect:/consoles";
     }
 
+    // Gestiona la eliminación de una consola
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes flash) {
         if (id > 0) {

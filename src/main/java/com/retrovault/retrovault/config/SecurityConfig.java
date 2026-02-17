@@ -41,6 +41,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .successHandler(loginSuccessHandler)
+                .defaultSuccessUrl("/", true)
                 .permitAll()
             )
             // CONFIGURACIÓN DEL CIERRE DE SESIÓN

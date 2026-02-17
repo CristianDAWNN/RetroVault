@@ -70,7 +70,7 @@
                                 <div class="me-4 text-val-red fs-4 fw-bold text-center" style="width: 30px;" th:text="${iter.count}">1</div>
                                 
                                 <a th:href="@{/profile/{id}(id=${user.id})}">
-                                    <img th:src="${user.avatar != null} ? @{'/uploads/avatars/' + ${user.avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" 
+                                    <img th:src="${user.avatar != null} ? ${user.avatar} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'"
                                          class="rounded-circle border border-danger shadow-sm" 
                                          style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
                                 </a>

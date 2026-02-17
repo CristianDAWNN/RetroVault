@@ -51,7 +51,7 @@
                         <span class="text-white small fw-bold text-uppercase" th:text="${currentUser.username}">USER</span>
                         
                         <img th:if="${currentUser.avatar != null}" 
-                             th:src="@{'/uploads/avatars/' + ${currentUser.avatar}}" 
+                             th:src="${currentUser.avatar}" 
                              class="val-avatar rounded-circle border border-dark">
                              
                         <img th:if="${currentUser.avatar == null}" 

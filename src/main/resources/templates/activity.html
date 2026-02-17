@@ -60,7 +60,7 @@
                         <div class="p-3 d-flex align-items-center border-bottom border-secondary border-opacity-10" style="background: rgba(255,255,255,0.02);">
                             
                             <a th:href="@{/profile/{id}(id=${game.user.id})}">
-                                <img th:src="${game.user.avatar != null} ? @{'/uploads/avatars/' + ${game.user.avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" 
+                                <img th:src="${game.user.avatar != null} ? ${game.user.avatar} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" 
                                      class="rounded-circle border border-danger me-3" 
                                      style="width: 45px; height: 45px; object-fit: cover;">
                             </a>
@@ -81,7 +81,7 @@
                         <div class="p-4">
                             <div class="d-flex gap-4">
                                 <div class="flex-shrink-0">
-                                    <img th:if="${game.coverImg != null}" th:src="@{'/uploads/' + ${game.coverImg}}" 
+                                    <img th:if="${game.coverImg != null}" th:src="${game.coverImg}" 
                                          class="rounded shadow-lg border border-secondary" 
                                          style="width: 100px; height: 140px; object-fit: cover;">
                                          

@@ -29,7 +29,7 @@ public class GeminiService {
             String scriptPath = "scripts/scanner.py";
             
             // Detección dinámica del sistema operativo para invocar el comando de Python correcto
-            String pythonCmd = System.getProperty("os.name").toLowerCase().contains("win") ? "python" : "python3";
+            String pythonCmd = "python3";
             
             // Configuración del proceso externo pasando la API Key y la ruta del archivo temporal
             ProcessBuilder pb = new ProcessBuilder(pythonCmd, scriptPath, apiKey, tempFile.toString());

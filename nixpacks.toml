@@ -1,6 +1,5 @@
-[providers]
-java = true
-python = true
-
 [phases.setup]
-nixPkgs = ['...', 'python3']
+nixPkgs = ["openjdk17", "python3", "pip"] # Ajusta la versión de JDK si usas otra (ej. openjdk11)
+
+[phases.build]
+cmds = ["./mvnw clean install", "pip install -r requirements.txt"] # Si tienes dependencias de Python

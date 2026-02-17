@@ -2,9 +2,9 @@ package com.retrovault.retrovault.controller;
 
 import com.retrovault.retrovault.model.Game;
 import com.retrovault.retrovault.repository.GameRepository;
+import com.retrovault.retrovault.service.GeminiService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +23,9 @@ public class RecommendationController {
     @Autowired
     private GameRepository gameRepository;
 
-    @Value("${gemini.api.key}") 
-    private String API_KEY;
-    
-    // Ruta del script de pyhthon para recomendaciones IA
-    private final String PYTHON_SCRIPT_PATH = "scripts/recommend.py";
+    // Inyectamos nuestro nuevo servicio de IA
+    @Autowired
+    private GeminiService geminiService;
 
     // Carga la interfaz de usuario para el buscador de recomendaciones
     @GetMapping("/recommendations")
@@ -45,7 +41,7 @@ public class RecommendationController {
             // Recupera los 5 títulos mejor valorados de la comunidad para ese género
             List<Game> games = gameRepository.findTop5ByGenreAndRateIsNotNullOrderByRateDesc(genre);
             
-            // Limpieza de datos para enviar solo lo necesario a la interfaz (título, puntuación y consola)
+            // Limpieza de datos para enviar solo lo necesario a la interfaz
             List<Map<String, Object>> cleanData = games.stream().map(g -> {
                 Map<String, Object> map = new HashMap<>();
                 map.put("title", g.getTitle());
@@ -60,31 +56,16 @@ public class RecommendationController {
         }
     }
 
-    // MODO IA: Integración con Python para obtener sugerencias de la ia
+    // MODO IA
     @GetMapping("/api/recommendations/ai")
     @ResponseBody
     public ResponseEntity<String> getAiRecommendations(@RequestParam String genre) {
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("python", PYTHON_SCRIPT_PATH, API_KEY, genre);
-            Process process = processBuilder.start();
-
-            // Captura de la salida estándar del script de Python
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder output = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line);
-            }
-
-            // Gestión del código de salida para asegurar que el script finalizó correctamente
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                return ResponseEntity.ok(output.toString());
-            } else {
-                return ResponseEntity.status(500).body("[{\"error\": \"Fallo en la ejecución del script Python\"}]");
-            }
+            // Llamamos a la IA pasándole directamente lo que pidió el usuario
+            String jsonResponse = geminiService.recommendGames(genre);
+            return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("[{\"error\": \"" + e.getMessage() + "\"}]");
+            return ResponseEntity.status(500).body("[{\"error\": \"Error en la IA: " + e.getMessage() + "\"}]");
         }
     }
 }

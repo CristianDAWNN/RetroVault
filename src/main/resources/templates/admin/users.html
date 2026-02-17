@@ -28,7 +28,7 @@
             
             <div th:if="${users.empty}" class="text-center py-5">
                 <i class="bi bi-people text-secondary display-1 mb-3 d-block"></i>
-                <h5 class="text-white fw-bold text-uppercase">BASE DE DATOS DE AGENTES VACÍA</h5>
+                <h5 class="text-white fw-bold text-uppercase">BASE DE DATOS DE USUARIOS VACÍA</h5>
             </div>
 
             <div class="table-responsive" th:if="${!users.empty}">
@@ -83,8 +83,8 @@
                                 <a th:if="${#authentication.name != u.username}"
                                    th:href="@{/admin/users/delete/{id}(id=${u.id})}" 
                                    class="btn btn-sm btn-outline-danger"
-                                   onclick="return confirm('ATENCIÓN: Se eliminará al agente y todos sus registros asociados. ¿Proceder?');"
-                                   title="Eliminar Agente">
+                                   onclick="return confirm('ATENCIÓN: Se eliminará al usuario y todos sus registros asociados. ¿Proceder?');"
+                                   title="Eliminar Usuario">
                                     <i class="bi bi-trash-fill"></i>
                                 </a>
                             </td>

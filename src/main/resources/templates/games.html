@@ -44,7 +44,7 @@
                 <div class="game-card">
                     
                     <img th:if="${g.coverImg != null}" 
-                         th:src="@{'/uploads/' + ${g.coverImg}}" 
+                         th:src="${g.coverImg}" 
                          class="game-card-img" 
                          alt="Portada">
                     

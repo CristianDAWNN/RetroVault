@@ -18,7 +18,7 @@
                         <div class="text-center" style="margin-top: -75px;">
                             
                             <div class="position-relative d-inline-block">
-                                <img th:if="${user.avatar != null}" th:src="@{'/uploads/avatars/' + ${user.avatar}}" 
+                                    <img th:if="${user.avatar != null}" th:src="${user.avatar}"
                                      class="rounded-circle border border-4 border-dark shadow-lg"
                                      style="width: 150px; height: 150px; object-fit: cover; background-color: #1a1a1a;">
                                      

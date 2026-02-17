@@ -40,7 +40,7 @@
                         <div class="val-rank-card rank-2 me-3" th:if="${topPlayers.size() > 1}">
                             <div class="rank-badge">#2</div>
                             <div class="rank-content">
-                                <img th:src="${topPlayers[1].avatar != null} ? @{'/uploads/avatars/' + ${topPlayers[1].avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rank-avatar">
+                                <img th:src="${topPlayers[1].avatar != null} ? ${topPlayers[1].avatar} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rank-avatar">
                                 <div class="mt-3 fw-bold text-white text-uppercase text-truncate" style="max-width: 140px; margin: 0 auto;" th:text="${topPlayers[1].username}">User2</div>
                                 <div class="text-secondary small">Nivel <span th:text="${topPlayers[1].level}">5</span></div>
                             </div>
@@ -48,7 +48,7 @@
                         <div class="val-rank-card rank-1 mx-2" th:if="${topPlayers.size() > 0}">
                             <div class="rank-badge bg-danger text-white">#1</div>
                             <div class="rank-content">
-                                <img th:src="${topPlayers[0].avatar != null} ? @{'/uploads/avatars/' + ${topPlayers[0].avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rank-avatar large">
+                                <img th:src="${topPlayers[0].avatar != null} ? ${topPlayers[0].avatar} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rank-avatar large">
                                 <div class="mt-3 fw-bold text-white fs-5 text-uppercase text-truncate" style="max-width: 160px; margin: 0 auto;" th:text="${topPlayers[0].username}">User1</div>
                                 <div class="text-val-red fw-bold small">Nivel <span th:text="${topPlayers[0].level}">10</span></div>
                             </div>
@@ -56,7 +56,7 @@
                         <div class="val-rank-card rank-3 ms-3" th:if="${topPlayers.size() > 2}">
                             <div class="rank-badge">#3</div>
                             <div class="rank-content">
-                                <img th:src="${topPlayers[2].avatar != null} ? @{'/uploads/avatars/' + ${topPlayers[2].avatar}} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rank-avatar">
+                                <img th:src="${topPlayers[2].avatar != null} ? ${topPlayers[2].avatar} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" class="rank-avatar">
                                 <div class="mt-3 fw-bold text-white text-uppercase text-truncate" style="max-width: 140px; margin: 0 auto;" th:text="${topPlayers[2].username}">User3</div>
                                 <div class="text-secondary small">Nivel <span th:text="${topPlayers[2].level}">3</span></div>
                             </div>
@@ -113,7 +113,7 @@
                     
                     <div class="d-flex flex-column gap-3">
                         <div th:each="gameStats : ${communityTopGames}" class="val-game-row d-flex align-items-center p-3 rounded">
-                            <img th:src="@{'/uploads/' + ${gameStats[2]}}" class="rounded" style="width: 80px; height: 50px; object-fit: cover;">
+                            <img th:src="${gameStats[2]}" class="rounded" style="width: 80px; height: 50px; object-fit: cover;">
                             
                             <div class="ms-3 flex-grow-1">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -148,7 +148,7 @@
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <div class="col" th:each="game : ${latestGames}">
                     <div class="game-card">
-                        <img th:src="@{'/uploads/' + ${game.coverImg}}" class="game-card-img">
+                        <img th:src="${game.coverImg}" class="game-card-img">
                         
                         <div class="game-info-overlay">
                             <h5 class="fw-bold text-uppercase mb-1" th:text="${game.title}">Título</h5>

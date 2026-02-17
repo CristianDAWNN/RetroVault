@@ -1,5 +1,6 @@
 package com.retrovault.retrovault.controller;
 
+import com.retrovault.retrovault.config.CloudinaryService;
 import com.retrovault.retrovault.model.Game;
 import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.service.ConsoleService;
@@ -14,11 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.*;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.UUID;
 
 // Controlador principal para la gestión de la colección de videojuegos
 @Controller
@@ -36,6 +35,9 @@ public class GameController {
 
     @Autowired
     private GeminiService geminiService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     // Lista los juegos del usuario, permitiendo filtrar por palabras nombre, consola o grnero
     @GetMapping
@@ -96,20 +98,12 @@ public class GameController {
             return "form-game";
         }
 
-        // Gestión de archivos: almacenamiento local de la portada
+        // Gestión de archivos: almacenamiento en la nube con Cloudinary
         if (!file.isEmpty()) {
             try {
-                Path directorioImagenes = Paths.get("uploads");
-                if (!Files.exists(directorioImagenes)) Files.createDirectories(directorioImagenes);
-
-                // Generación de nombre único mediante UUID para evitar sobreescritura
-                String nombreOriginal = file.getOriginalFilename();
-                String nombreLimpio = nombreOriginal != null ? nombreOriginal.replaceAll("[^a-zA-Z0-9\\.\\-]", "_") : "unknown.jpg";
-                String nombreArchivo = UUID.randomUUID().toString() + "_" + nombreLimpio;
-                
-                Files.write(directorioImagenes.resolve(nombreArchivo), file.getBytes());
-                game.setCoverImg(nombreArchivo);
-
+                // Mandamos el archivo a Cloudinary y recogemos la URL segura
+                String secureUrl = cloudinaryService.subirImagen(file);
+                game.setCoverImg(secureUrl);
             } catch (IOException e) {
                 e.printStackTrace(); 
             }
@@ -117,7 +111,7 @@ public class GameController {
             // Si es edición y no hay archivo nuevo, mantiene la imagen existente
             Game existingGame = gameService.getGameById(game.getId());
             if (existingGame != null) game.setCoverImg(existingGame.getCoverImg());
-        }
+}
 
         // Lógica de gamificación: solo suma XP si es juego nuevo
         if (game.getId() == null) {
@@ -131,6 +125,28 @@ public class GameController {
         
         gameService.saveGame(game);
         return "redirect:/games";
+    }
+
+    // Editar un juego
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model, Principal principal) {
+        // Buscamos el juego en la base de datos
+        Game game = gameService.getGameById(id);
+        
+        // Si el juego no existe, lo mandamos de vuelta a la lista
+        if (game == null) {
+            return "redirect:/games";
+        }
+
+        // Buscamos al usuario actual para cargar sus consolas
+        User currentUser = userService.getUserByUsername(principal.getName());
+        
+        // Pasamos el juego y las consolas al formulario
+        model.addAttribute("game", game);
+        model.addAttribute("consoles", consoleService.getConsolesByUser(currentUser));
+        
+        // Reutilizamos el mismo HTML que usamos para crear
+        return "form-game";
     }
 
     // Borrado de juego y descuento de xp

@@ -1,5 +1,6 @@
 package com.retrovault.retrovault.service;
 
+import com.retrovault.retrovault.config.CloudinaryService;
 import com.retrovault.retrovault.model.User;
 import com.retrovault.retrovault.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 // Servicio central para la gestión de usuarios, seguridad y sistema de niveles
 @Service
@@ -24,6 +20,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -57,21 +56,13 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    // Procesa y almacena la imagen de perfil del usuario
+    // Procesa y almacena la imagen de perfil del usuario en Cloudinary
     public void updateUserAvatar(Long userId, MultipartFile avatarFile) throws Exception {
         User user = getUserById(userId);
         if (user != null && !avatarFile.isEmpty()) {
-            String fileName = UUID.randomUUID().toString() + "_" + avatarFile.getOriginalFilename();
-            Path uploadPath = Paths.get("uploads/avatars");
-            
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            
-            user.setAvatar(fileName);
+            // Sube a Cloudinary y guarda la URL
+            String avatarUrl = cloudinaryService.subirImagen(avatarFile);
+            user.setAvatar(avatarUrl);
             userRepository.save(user);
         }
     }

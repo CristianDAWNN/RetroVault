@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragments/head :: header}"></div>
     <link rel="stylesheet" th:href="@{/css/valorant-style.css}">
@@ -8,7 +8,7 @@
 
     <div th:replace="~{fragments/nav :: navbar}"></div>
 
-    <div class="container mt-5 mb-5">
+    <main class="container mt-5 mb-5">
         
         <div class="text-center mb-5">
             <h1 class="fw-bold text-white display-5 val-font">ACTIVIDAD</h1>
@@ -41,14 +41,14 @@
 
                 <div th:if="${followingCount == 0}" class="text-center py-5 val-dashboard-card">
                     <i class="bi bi-people text-secondary" style="font-size: 4rem;"></i>
-                    <h3 class="text-white mt-3 fw-bold">El radar está vacío</h3>
+                    <h2 class="h3 text-white mt-3 fw-bold">El radar está vacío</h2>
                     <p class="text-secondary">Aún no sigues a nadie. Busca usuarios en el Ranking para ver su actividad aquí.</p>
                     <a th:href="@{/ranking}" class="btn val-btn-register mt-3 text-uppercase fw-bold">Ir al Ranking</a>
                 </div>
 
                 <div th:if="${followingCount > 0 and activities.empty}" class="text-center py-5 val-dashboard-card">
                     <i class="bi bi-clock-history text-secondary" style="font-size: 4rem;"></i>
-                    <h3 class="text-white mt-3 fw-bold">Todo tranquilo...</h3>
+                    <h2 class="h3 text-white mt-3 fw-bold">Todo tranquilo...</h2>
                     <p class="text-secondary">Tus amigos no han añadido juegos recientemente.</p>
                 </div>
 
@@ -61,6 +61,7 @@
                             
                             <a th:href="@{/profile/{id}(id=${game.user.id})}">
                                 <img th:src="${game.user.avatar != null} ? ${game.user.avatar} : 'https://cdn-icons-png.flaticon.com/512/847/847969.png'" 
+                                     alt="Avatar del usuario"
                                      class="rounded-circle border border-danger me-3" 
                                      style="width: 45px; height: 45px; object-fit: cover;">
                             </a>
@@ -82,6 +83,7 @@
                             <div class="d-flex gap-4">
                                 <div class="flex-shrink-0">
                                     <img th:if="${game.coverImg != null}" th:src="${game.coverImg}" 
+                                         alt="Portada del juego"
                                          class="rounded shadow-lg border border-secondary" 
                                          style="width: 100px; height: 140px; object-fit: cover;">
                                          
@@ -92,7 +94,7 @@
 
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-start">
-                                        <h3 class="fw-bold text-white text-uppercase mb-1" style="font-family: 'Kanit', sans-serif;" th:text="${game.title}">TITULO</h3>
+                                        <h3 class="h4 fw-bold text-white text-uppercase mb-1" style="font-family: 'Kanit', sans-serif;" th:text="${game.title}">TITULO</h3>
                                         
                                         <div class="bg-val-red text-white fw-bold px-2 py-1 rounded" style="font-size: 0.9rem;" th:if="${game.rate != null}">
                                             <i class="bi bi-star-fill me-1" style="font-size: 0.7rem;"></i>
@@ -121,7 +123,7 @@
 
             </div>
         </div>
-    </div>
+    </main>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

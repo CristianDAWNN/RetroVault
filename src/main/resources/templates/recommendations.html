@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragments/head :: header}"></div>
     <link rel="stylesheet" th:href="@{/css/valorant-style.css}">
@@ -8,7 +8,7 @@
 
     <div th:replace="~{fragments/nav :: navbar}"></div>
 
-    <div class="container mt-5 mb-5">
+    <main class="container mt-5 mb-5">
         
         <div class="mb-5 text-center fade-in-up">
             <h1 class="fw-bold text-white display-5 val-font">RECOMENDACIONES</h1>
@@ -24,13 +24,13 @@
             </button>
         </div>
 
-    <div id="section-rec-manual" class="fade-in-up">
+        <div id="section-rec-manual" class="fade-in-up">
             <div class="val-dashboard-card max-w-800 mx-auto">
-                <h4 class="text-white fw-bold mb-3">Top 5 de la Comunidad RetroVault</h4>
+                <h2 class="h4 text-white fw-bold mb-3">Top 5 de la Comunidad RetroVault</h2>
                 <p class="text-secondary mb-4">Selecciona un género para ver los juegos mejor valorados por nuestros usuarios.</p>
                 
                 <div class="d-flex gap-2 mb-4">
-                    <select id="manual-genre-input" class="form-select val-input">
+                    <select id="manual-genre-input" aria-label="Seleccionar género de juego" class="form-select val-input">
                         <option value="">Selecciona un género...</option>
                         <option value="RPG">RPG</option>
                         <option value="Plataformas">Plataformas</option>
@@ -44,25 +44,25 @@
                     <button id="btn-get-manual-rec" class="btn btn-danger fw-bold text-nowrap">Buscar</button>
                 </div>
 
-                <div id="manual-rec-results"></div>
+                <div id="manual-rec-results" aria-live="polite"></div>
             </div>
         </div>
 
         <div id="section-rec-ai" class="fade-in-up" style="display: none;">
             <div class="val-dashboard-card border-danger max-w-800 mx-auto" style="border: 2px solid #ff4655;">
-                <h4 class="text-val-red fw-bold mb-3"><i class="bi bi-stars me-2"></i> IA</h4>
+                <h2 class="h4 text-val-red fw-bold mb-3"><i class="bi bi-stars me-2"></i> IA</h2>
                 <p class="text-secondary mb-4">Dinos un género o juego que te guste y la consola donde quieres jugarlo, y Gemini hará su magia.</p>
                 
                 <div class="d-flex gap-2 mb-4">
-                    <input type="text" id="ai-genre-input" class="form-control val-input" placeholder="Ej: Juegos parecidos a Pokemon, RPG para (las consolas que quieras)">
+                    <input type="text" id="ai-genre-input" aria-label="Petición para la Inteligencia Artificial" class="form-control val-input" placeholder="Ej: Juegos parecidos a Pokemon, RPG para (las consolas que quieras)">
                     <button id="btn-get-ai-rec" class="btn btn-danger fw-bold text-nowrap">Consultar IA</button>
                 </div>
 
-                <div id="ai-rec-results"></div>
+                <div id="ai-rec-results" aria-live="polite"></div>
             </div>
         </div>
 
-    </div>
+    </main>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

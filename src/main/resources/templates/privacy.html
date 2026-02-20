@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: header}"></head>
 <body>
 
     <div th:replace="~{fragments/nav :: navbar}"></div>
 
-    <div class="container mt-5 mb-5">
+    <main class="container mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 
@@ -16,7 +16,7 @@
 
                 <div class="val-legal-content text-white-50">
                     
-                    <h4 class="text-white mt-4 mb-3">1. Política de Cookies (La versión corta)</h4>
+                    <h2 class="h4 text-white mt-4 mb-3">1. Política de Cookies</h2>
                     <p>
                         En <strong>RetroVault</strong> no nos interesa espiarte. No usamos Google Analytics, no vendemos tus datos y no usamos rastreadores publicitarios.
                     </p>
@@ -26,7 +26,7 @@
                         <strong>¿Para qué sirve?</strong> Simplemente para recordar que has iniciado sesión. Sin ella, tendrías que poner tu usuario y contraseña cada vez que cambiaras de página. Según la normativa europea (RGPD), esta cookie está exenta de pedir consentimiento porque es "estrictamente necesaria" para el funcionamiento del servicio.
                     </p>
 
-                    <h4 class="text-white mt-5 mb-3">2. Privacidad de Datos</h4>
+                    <h2 class="h4 text-white mt-5 mb-3">2. Privacidad de Datos</h2>
                     <p>
                         Los datos que guardamos (tu colección de juegos, consolas y fotos) se almacenan en nuestra base de datos privada.
                     </p>
@@ -35,7 +35,7 @@
                         <li>Tu correo solo se usa para recuperar la cuenta o enviarte notificaciones del sistema.</li>
                     </ul>
 
-                    <h4 class="text-white mt-5 mb-3">3. Términos de Uso</h4>
+                    <h2 class="h4 text-white mt-5 mb-3">3. Términos de Uso</h2>
                     <p>
                         RetroVault es una plataforma para uso personal y comunitario. Al registrarte aceptas:
                     </p>
@@ -54,7 +54,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -637,6 +637,44 @@ input:-webkit-autofill:active {
     .rank-2 { order: 2; }
     .rank-3 { order: 3; }
 }
+/* =========================================
+   CLASES EXTRA
+   ========================================= */
+
+/* Tipografía específica y espaciado */
+.val-font {
+    font-family: 'Kanit', sans-serif;
+    letter-spacing: 1px;
+}
+
+.spacing-2 {
+    letter-spacing: 2px;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+.hover-red {
+    transition: color 0.2s ease-in-out;
+}
+
+.hover-red:hover {
+    color: var(--val-red) !important;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 @media (max-width: 768px) {
     .val-tab-btn {

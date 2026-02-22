@@ -1,38 +1,34 @@
 package com.retrovault.retrovault.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-// Servicio encargado de gestionar los correo electrónico
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+// Servicio encargado de gestionar los correos electrónicos mediante API
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
-    // Obtiene la URL base de la aplicación desde el archivo de configuración (application.properties)
+    // Obtiene la URL base de la aplicación desde el archivo de configuración
     @Value("${app.base-url:http://localhost:8080}")
     private String appBaseUrl;
 
-    @Async //Se envia el correo en segundo plano
+    // Aquí inyectamos la clave de Brevo desde Railway
+    @Value("${BREVO_API_KEY}")
+    private String apiKey;
+
+    @Async // Se envia el correo en segundo plano
     // Método principal para enviar el correo de registro
     public void sendWelcomeEmail(String toEmail, String username) {
         try {
-            // Se utiliza MimeMessage para permitir el envío de contenido HTML en lugar de texto plano
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom("retrovault.app@gmail.com");
-            helper.setTo(toEmail);
-            helper.setSubject("Bienvenido a RetroVault");
-
-            // Plantilla HTML
+            // Plantilla HTML (Intacta)
             String htmlContent = """
                 <body style="background-color: #0f1923; margin: 0; padding: 40px 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                     <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%%" style="max-width: 600px; background-color: #1a2730; border-top: 4px solid #ff4655; border-radius: 4px; padding: 40px 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
@@ -70,14 +66,31 @@ public class EmailService {
                 </body>
                 """.formatted(username, appBaseUrl);
 
-            // El segundo parámetro en true indica que el contenido debe interpretarse como HTML
-            helper.setText(htmlContent, true);
+            // Configuramos la llamada API REST a Brevo
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("api-key", apiKey);
+            headers.set("accept", "application/json");
 
-            mailSender.send(message);
+            // Construimos el JSON con los datos del correo
+            Map<String, Object> body = new HashMap<>();
+            body.put("sender", Map.of("name", "RetroVault", "email", "retrovaultdaw@gmail.com"));
+            body.put("to", List.of(Map.of("email", toEmail, "name", username)));
+            body.put("subject", "Bienvenido a RetroVault");
+            body.put("htmlContent", htmlContent);
 
-        } catch (MessagingException e) {
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+            // Disparamos la petición POST
+            restTemplate.postForEntity("https://api.brevo.com/v3/smtp/email", request, String.class);
+            
+            // Log de éxito en la consola para pruebas
+            System.out.println("Correo API enviado con éxito a: " + toEmail);
+
+        } catch (Exception e) {
             // Captura silenciosa de errores para no interrumpir el flujo de registro del usuario
-            System.err.println("Error interno en el servicio de correo: " + e.getMessage());
+            System.err.println("Error interno en la API de correo: " + e.getMessage());
         }
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 // Servicio encargado de gestionar los correo electrónico
@@ -19,6 +20,7 @@ public class EmailService {
     @Value("${app.base-url:http://localhost:8080}")
     private String appBaseUrl;
 
+    @Async //Se envia el correo en segundo plano
     // Método principal para enviar el correo de registro
     public void sendWelcomeEmail(String toEmail, String username) {
         try {
